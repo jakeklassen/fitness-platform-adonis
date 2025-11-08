@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "name": "✨ root",
+      "path": "."
+    },
+    {
+      "name": "🌐 platform",
+      "path": "packages/platform"
+    },
+    {
+      "name": "🧩 adonis-ally-fitbit",
+      "path": "packages/adonis-ally-fitbit"
+    }
+  ],
+  "settings": {
+    // "typescript.preferences.importModuleSpecifierEnding": "js",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll.eslint": "explicit"
+    }
+  }
+}

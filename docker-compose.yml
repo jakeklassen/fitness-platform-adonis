@@ -1,0 +1,23 @@
+name: fitness-platform-adonis
+
+services:
+  postgres:
+    image: postgres:18.0
+    container_name: fitness-platform-adonis-postgres
+    environment:
+      POSTGRES_DB: fitness-platform-adonis
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - fitness-platform-adonis_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  fitness-platform-adonis_postgres_data:
