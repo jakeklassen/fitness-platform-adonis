@@ -15,6 +15,7 @@
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
+    "#dtos/*": "./app/dtos/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
     "#models/*": "./app/models/*.js",
     "#mails/*": "./app/mails/*.js",
@@ -34,7 +35,7 @@
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
     "@adonisjs/eslint-config": "^2.0.0",
-    "@adonisjs/prettier-config": "^1.4.4",
+    "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^1.4.0",
     "@japa/assert": "^4.0.1",
     "@japa/plugin-adonisjs": "^4.0.0",
@@ -54,6 +55,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@adonisjs/ally": "^5.1.1",
     "@adonisjs/auth": "^9.4.0",
     "@adonisjs/core": "^6.18.0",
     "@adonisjs/cors": "^2.2.1",
@@ -65,6 +67,8 @@
     "@adonisjs/vite": "^4.0.0",
     "@inertiajs/react": "^2.2.15",
     "@vinejs/vine": "^3.0.1",
+    "adonis-ally-fitbit": "workspace:*",
+    "adonisjs-scheduler": "^2.6.4",
     "edge.js": "^6.2.1",
     "luxon": "^3.7.2",
     "pg": "^8.16.3",
@@ -77,6 +81,5 @@
       "./app/controllers/**/*.ts",
       "./app/middleware/*.ts"
     ]
-  },
-  "prettier": "@adonisjs/prettier-config"
+  }
 }

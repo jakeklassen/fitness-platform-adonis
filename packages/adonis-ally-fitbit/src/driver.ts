@@ -14,10 +14,14 @@
 |--------------------------------------------------------------------------
  */
 
-import { Oauth2Driver, RedirectRequest } from '@adonisjs/ally'
-import type { AllyDriverContract, AllyUserContract, ApiRequestContract } from '@adonisjs/ally/types'
-import type { HttpContext } from '@adonisjs/core/http'
-import { createHash, randomBytes } from 'node:crypto'
+import { Oauth2Driver, RedirectRequest } from '@adonisjs/ally';
+import type {
+  AllyDriverContract,
+  AllyUserContract,
+  ApiRequestContract,
+} from '@adonisjs/ally/types';
+import type { HttpContext } from '@adonisjs/core/http';
+import { createHash, randomBytes } from 'node:crypto';
 
 /**
  *
@@ -26,9 +30,12 @@ import { createHash, randomBytes } from 'node:crypto'
  * define additional properties (if needed)
  */
 export type FitBitAccessToken = {
-  token: string
-  type: 'bearer'
-}
+  token: string;
+  type: 'bearer';
+  refreshToken?: string;
+  expiresAt?: Date;
+  expiresIn?: number;
+};
 
 /**
  * Scopes accepted by the driver implementation.
@@ -48,19 +55,19 @@ export type FitBitScopes =
   | 'cardio_fitness'
   | 'temperature'
   | 'electrocardiogram'
-  | 'irregular_rhythm_notifications'
+  | 'irregular_rhythm_notifications';
 
 /**
  * The configuration accepted by the driver implementation.
  */
 export type FitBitConfig = {
-  clientId: string
-  clientSecret: string
-  callbackUrl: string
-  authorizeUrl?: string
-  accessTokenUrl?: string
-  userInfoUrl?: string
-}
+  clientId: string;
+  clientSecret: string;
+  callbackUrl: string;
+  authorizeUrl?: string;
+  accessTokenUrl?: string;
+  userInfoUrl?: string;
+};
 
 /**
  * Driver implementation. It is mostly configuration driven except the API call
@@ -76,42 +83,42 @@ export class FitBit
    *
    * Do not define query strings in this URL.
    */
-  protected authorizeUrl = 'https://www.fitbit.com/oauth2/authorize'
+  protected authorizeUrl = 'https://www.fitbit.com/oauth2/authorize';
 
   /**
    * The URL to hit to exchange the authorization code for the access token
    *
    * Do not define query strings in this URL.
    */
-  protected accessTokenUrl = 'https://api.fitbit.com/oauth2/token'
+  protected accessTokenUrl = 'https://api.fitbit.com/oauth2/token';
 
   /**
    * The URL to hit to get the user details
    *
    * Do not define query strings in this URL.
    */
-  protected userInfoUrl = 'https://api.fitbit.com/1/user/-/profile.json'
+  protected userInfoUrl = 'https://api.fitbit.com/1/user/-/profile.json';
 
   /**
    * The param name for the authorization code. Read the documentation of your oauth
    * provider and update the param name to match the query string field name in
    * which the oauth provider sends the authorization_code post redirect.
    */
-  protected codeParamName = 'code'
+  protected codeParamName = 'code';
 
   /**
    * The param name for the error. Read the documentation of your oauth provider and update
    * the param name to match the query string field name in which the oauth provider sends
    * the error post redirect
    */
-  protected errorParamName = 'error'
+  protected errorParamName = 'error';
 
   /**
    * Cookie name for storing the CSRF token. Make sure it is always unique. So a better
    * approach is to prefix the oauth provider name to `oauth_state` value. For example:
    * For example: "facebook_oauth_state"
    */
-  protected stateCookieName = 'fitbit_oauth_state'
+  protected stateCookieName = 'fitbit_oauth_state';
 
   /**
    * Parameter name to be used for sending and receiving the state from.
@@ -119,20 +126,23 @@ export class FitBit
    * name to match the query string used by the provider for exchanging
    * the state.
    */
-  protected stateParamName = 'state'
+  protected stateParamName = 'state';
 
   /**
    * Parameter name for sending the scopes to the oauth provider.
    */
-  protected scopeParamName = 'scope'
+  protected scopeParamName = 'scope';
 
   /**
    * The separator indentifier for defining multiple scopes
    */
-  protected scopesSeparator = ' '
+  protected scopesSeparator = ' ';
 
-  constructor(ctx: HttpContext, public config: FitBitConfig) {
-    super(ctx, config)
+  constructor(
+    ctx: HttpContext,
+    public config: FitBitConfig,
+  ) {
+    super(ctx, config);
 
     /**
      * Extremely important to call the following method to clear the
@@ -140,7 +150,7 @@ export class FitBit
      *
      * DO NOT REMOVE THE FOLLOWING LINE
      */
-    this.loadState()
+    this.loadState();
   }
 
   /**
@@ -152,7 +162,7 @@ export class FitBit
       .toString('base64')
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
-      .replace(/=/g, '')
+      .replace(/=/g, '');
   }
 
   /**
@@ -165,7 +175,7 @@ export class FitBit
       .digest('base64')
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
-      .replace(/=/g, '')
+      .replace(/=/g, '');
   }
 
   /**
@@ -173,14 +183,19 @@ export class FitBit
    * Fitbit requires PKCE for OAuth2 flows.
    */
   protected configureRedirectRequest(request: RedirectRequest<FitBitScopes>) {
-    const codeVerifier = this.generateCodeVerifier()
-    const codeChallenge = this.generateCodeChallenge(codeVerifier)
+    const codeVerifier = this.generateCodeVerifier();
+    const codeChallenge = this.generateCodeChallenge(codeVerifier);
+
+    /**
+     * Set required OAuth2 parameters
+     */
+    request.param('response_type', 'code');
 
     /**
      * Add PKCE parameters to the authorization request
      */
-    request.param('code_challenge', codeChallenge)
-    request.param('code_challenge_method', 'S256')
+    request.param('code_challenge', codeChallenge);
+    request.param('code_challenge_method', 'S256');
 
     /**
      * Store the code verifier in a cookie to retrieve it during callback
@@ -189,7 +204,7 @@ export class FitBit
       httpOnly: true,
       sameSite: 'lax',
       maxAge: 300, // 5 minutes - should be enough for OAuth flow
-    })
+    });
   }
 
   /**
@@ -200,23 +215,23 @@ export class FitBit
     /**
      * Retrieve code verifier from cookie
      */
-    const codeVerifier = this.ctx.request.cookie('fitbit_code_verifier')
+    const codeVerifier = this.ctx.request.cookie('fitbit_code_verifier');
 
     if (codeVerifier) {
-      request.field('code_verifier', codeVerifier)
+      request.field('code_verifier', codeVerifier);
       /**
        * Clear the code verifier cookie after use
        */
-      this.ctx.response.clearCookie('fitbit_code_verifier')
+      this.ctx.response.clearCookie('fitbit_code_verifier');
     }
 
     /**
      * Fitbit requires Basic Auth with base64-encoded clientId:clientSecret
      */
     const credentials = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString(
-      'base64'
-    )
-    request.header('Authorization', `Basic ${credentials}`)
+      'base64',
+    );
+    request.header('Authorization', `Basic ${credentials}`);
   }
 
   /**
@@ -224,7 +239,7 @@ export class FitBit
    * means "ACCESS DENIED".
    */
   accessDenied() {
-    return this.ctx.request.input('error') === 'user_denied'
+    return this.ctx.request.input('error') === 'user_denied';
   }
 
   /**
@@ -232,25 +247,36 @@ export class FitBit
    * the access token and the user details.
    */
   async user(
-    callback?: (request: ApiRequestContract) => void
+    callback?: (request: ApiRequestContract) => void,
   ): Promise<AllyUserContract<FitBitAccessToken>> {
-    const accessToken = await this.accessToken()
-    const request = this.httpClient(this.config.userInfoUrl || this.userInfoUrl)
+    const accessToken = await this.accessToken();
+    const request = this.httpClient(this.config.userInfoUrl || this.userInfoUrl);
 
     /**
      * Set Bearer token authorization
      */
-    request.header('Authorization', `Bearer ${accessToken.token}`)
+    request.header('Authorization', `Bearer ${accessToken.token}`);
 
     /**
      * Allow end user to configure the request. This should be called after your custom
      * configuration, so that the user can override them (if needed)
      */
     if (typeof callback === 'function') {
-      callback(request)
+      callback(request);
     }
 
-    const body = await request.get()
+    let response = await request.get();
+
+    // Parse JSON if it's a string
+    if (typeof response === 'string') {
+      response = JSON.parse(response);
+    }
+
+    const body = response;
+
+    if (!body || typeof body !== 'object' || !body.user) {
+      throw new Error(`Invalid Fitbit API response: ${JSON.stringify(body)}`);
+    }
 
     return {
       id: body.user.encodedId,
@@ -261,29 +287,40 @@ export class FitBit
       avatarUrl: body.user.avatar640 || body.user.avatar150 || body.user.avatar || null,
       original: body.user,
       token: accessToken,
-    }
+    };
   }
 
   async userFromToken(
     accessToken: string,
-    callback?: (request: ApiRequestContract) => void
+    callback?: (request: ApiRequestContract) => void,
   ): Promise<AllyUserContract<{ token: string; type: 'bearer' }>> {
-    const request = this.httpClient(this.config.userInfoUrl || this.userInfoUrl)
+    const request = this.httpClient(this.config.userInfoUrl || this.userInfoUrl);
 
     /**
      * Set Bearer token authorization
      */
-    request.header('Authorization', `Bearer ${accessToken}`)
+    request.header('Authorization', `Bearer ${accessToken}`);
 
     /**
      * Allow end user to configure the request. This should be called after your custom
      * configuration, so that the user can override them (if needed)
      */
     if (typeof callback === 'function') {
-      callback(request)
+      callback(request);
     }
 
-    const body = await request.get()
+    let response = await request.get();
+
+    // Parse JSON if it's a string
+    if (typeof response === 'string') {
+      response = JSON.parse(response);
+    }
+
+    const body = response;
+
+    if (!body || typeof body !== 'object' || !body.user) {
+      throw new Error(`Invalid Fitbit API response: ${JSON.stringify(body)}`);
+    }
 
     return {
       id: body.user.encodedId,
@@ -297,7 +334,7 @@ export class FitBit
         token: accessToken,
         type: 'bearer' as const,
       },
-    }
+    };
   }
 }
 
@@ -306,5 +343,5 @@ export class FitBit
  * inside the "config/ally.ts" file.
  */
 export function FitBitService(config: FitBitConfig): (ctx: HttpContext) => FitBit {
-  return (ctx) => new FitBit(ctx, config)
+  return (ctx) => new FitBit(ctx, config);
 }

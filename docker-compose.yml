@@ -2,7 +2,7 @@ name: fitness-platform-adonis
 
 services:
   postgres:
-    image: postgres:18.0
+    image: postgres:17.4
     container_name: fitness-platform-adonis-postgres
     environment:
       POSTGRES_DB: fitness-platform-adonis
