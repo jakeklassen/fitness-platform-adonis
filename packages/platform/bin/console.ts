@@ -11,8 +11,13 @@
 |
 */
 
-import 'reflect-metadata';
 import { Ignitor, prettyPrintError } from '@adonisjs/core';
+import 'reflect-metadata';
+
+/**
+ * Set the command name for ace commands
+ */
+process.env.ACE_CLI_COMMAND = process.argv[2] ?? '';
 
 /**
  * URL to the application root. AdonisJS need it to resolve

@@ -5,6 +5,7 @@ const dbConfig = defineConfig({
   connection: 'postgres',
   connections: {
     postgres: {
+      debug: true,
       client: 'pg',
       connection: {
         host: env.get('DB_HOST'),

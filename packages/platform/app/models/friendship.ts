@@ -1,0 +1,34 @@
+import User from '#models/user';
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
+import type { BelongsTo } from '@adonisjs/lucid/types/relations';
+import { DateTime } from 'luxon';
+
+export default class Friendship extends BaseModel {
+  @column({ isPrimary: true })
+  declare id: number;
+
+  @column()
+  declare userId: number;
+
+  @column()
+  declare friendId: number;
+
+  @column()
+  declare status: 'pending' | 'accepted' | 'declined';
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime;
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime;
+
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  declare user: BelongsTo<typeof User>;
+
+  @belongsTo(() => User, {
+    foreignKey: 'friendId',
+  })
+  declare friend: BelongsTo<typeof User>;
+}

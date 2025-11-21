@@ -1,6 +1,11 @@
 import ProfilesController from '#controllers/profiles_controller';
 import { InferPageProps } from '@adonisjs/inertia/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Activity, Link as LinkIcon, Unlink, User } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Alert, AlertDescription } from '~/components/ui/alert';
+import { Badge } from '~/components/ui/badge';
 
 export default function Profile(props: InferPageProps<ProfilesController, 'show'>) {
   const { user, accounts, flash, fitbitUserData } = props;
@@ -25,58 +30,73 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
     <>
       <Head title="Profile" />
 
-      <div className="min-h-screen bg-sand-2">
-        <nav className="bg-white shadow">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-bold text-sand-12">Fitness Platform</h1>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-sand-11">{user.email}</span>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-sm font-medium text-sand-12 hover:text-sand-11"
-                >
-                  Logout
-                </button>
-              </div>
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto flex h-16 max-w-screen-xl items-center px-4">
+            <div className="mr-auto flex items-center gap-2">
+              <Activity className="h-6 w-6" />
+              <Link href="/" className="text-xl font-bold">
+                Fitness Platform
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link href="/profile">Profile</Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/friends">Friends</Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/competitions">Competitions</Link>
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
+                Log Out
+              </Button>
             </div>
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-xl px-4 py-8">
+          {/* Flash Messages */}
           {flash?.success && (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm text-green-800">{flash.success}</p>
-            </div>
+            <Alert className="mb-6 bg-green-50 border-green-200">
+              <AlertDescription className="text-green-800">{flash.success}</AlertDescription>
+            </Alert>
           )}
-
           {flash?.error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-800">{flash.error}</p>
-            </div>
+            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
+              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
+            </Alert>
           )}
 
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-2xl font-bold text-sand-12 mb-4">Profile</h2>
-            <div className="space-y-4">
+          {/* Profile Information */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-2xl">Profile</CardTitle>
+              <CardDescription>Your account information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-sand-11">Full Name</label>
-                <p className="mt-1 text-sand-12">{user.fullName || 'Not provided'}</p>
+                <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                <p className="text-lg mt-1">{user.fullName || 'Not provided'}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-sand-11">Email</label>
-                <p className="mt-1 text-sand-12">{user.email}</p>
+                <label className="text-sm font-medium text-muted-foreground">Email</label>
+                <p className="text-lg mt-1">{user.email}</p>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-sand-12 mb-4">Connected Accounts</h2>
-
-            <div className="space-y-4">
-              <div className="border border-sand-7 rounded-lg p-4 flex items-center justify-between">
+          {/* Connected Accounts */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-2xl">Connected Accounts</CardTitle>
+              <CardDescription>Manage your connected fitness tracker accounts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-lg p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-[#00B0B9] rounded-lg flex items-center justify-center">
                     <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -84,135 +104,134 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sand-12">Fitbit</h3>
+                    <h3 className="font-semibold text-lg">Fitbit</h3>
                     {fitbitAccount ? (
-                      <p className="text-sm text-sand-11">
+                      <p className="text-sm text-muted-foreground">
                         Connected • User ID: {fitbitAccount.providerId}
                       </p>
                     ) : (
-                      <p className="text-sm text-sand-11">Not connected</p>
+                      <p className="text-sm text-muted-foreground">Not connected</p>
                     )}
                   </div>
                 </div>
 
                 {fitbitAccount ? (
-                  <button
-                    onClick={() => handleUnlinkAccount(fitbitAccount.id)}
-                    className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 border border-red-300 hover:border-red-400 rounded-md"
-                  >
+                  <Button variant="destructive" onClick={() => handleUnlinkAccount(fitbitAccount.id)}>
+                    <Unlink className="mr-2 h-4 w-4" />
                     Disconnect
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    onClick={handleLinkFitbit}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary hover:opacity-90 rounded-md"
-                  >
+                  <Button onClick={handleLinkFitbit}>
+                    <LinkIcon className="mr-2 h-4 w-4" />
                     Connect
-                  </button>
+                  </Button>
                 )}
               </div>
 
               {fitbitAccount && (
-                <div className="mt-4 p-4 bg-sand-2 rounded-lg">
-                  <h4 className="font-semibold text-sand-12 mb-2">Account Details</h4>
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h4 className="font-semibold mb-2">Account Details</h4>
                   <dl className="grid grid-cols-1 gap-2 text-sm">
                     <div>
-                      <dt className="text-sand-11">Provider ID:</dt>
-                      <dd className="text-sand-12 font-mono">{fitbitAccount.providerId}</dd>
+                      <dt className="text-muted-foreground">Provider ID:</dt>
+                      <dd className="font-mono">{fitbitAccount.providerId}</dd>
                     </div>
                     <div>
-                      <dt className="text-sand-11">Connected on:</dt>
-                      <dd className="text-sand-12">{fitbitAccount.createdAtFormatted}</dd>
+                      <dt className="text-muted-foreground">Connected on:</dt>
+                      <dd>{fitbitAccount.createdAtFormatted}</dd>
                     </div>
                   </dl>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
+          {/* Fitbit Stats */}
           {fitbitUserData && (
-            <div className="bg-white shadow rounded-lg p-6 mt-6">
-              <h2 className="text-2xl font-bold text-sand-12 mb-4">Fitbit Stats</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Profile Info */}
-                {fitbitUserData.displayName && (
-                  <div className="p-4 bg-sand-2 rounded-lg">
-                    <div className="text-sm text-sand-11 mb-1">Display Name</div>
-                    <div className="text-lg font-semibold text-sand-12">
-                      {fitbitUserData.displayName}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Fitbit Stats</CardTitle>
+                <CardDescription>Your fitness tracker statistics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Profile Info */}
+                  {fitbitUserData.displayName && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Display Name</div>
+                      <div className="text-lg font-semibold">{fitbitUserData.displayName}</div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {fitbitUserData.age && (
-                  <div className="p-4 bg-sand-2 rounded-lg">
-                    <div className="text-sm text-sand-11 mb-1">Age</div>
-                    <div className="text-lg font-semibold text-sand-12">{fitbitUserData.age}</div>
-                  </div>
-                )}
-
-                {fitbitUserData.gender && (
-                  <div className="p-4 bg-sand-2 rounded-lg">
-                    <div className="text-sm text-sand-11 mb-1">Gender</div>
-                    <div className="text-lg font-semibold text-sand-12">
-                      {fitbitUserData.gender.charAt(0) +
-                        fitbitUserData.gender.slice(1).toLowerCase()}
+                  {fitbitUserData.age && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Age</div>
+                      <div className="text-lg font-semibold">{fitbitUserData.age}</div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {fitbitUserData.averageDailySteps !== undefined && (
-                  <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                    <div className="text-sm text-sand-11 mb-1">Average Daily Steps</div>
-                    <div className="text-2xl font-bold text-primary">
-                      {fitbitUserData.averageDailySteps.toLocaleString()}
-                    </div>
-                  </div>
-                )}
-
-                {fitbitUserData.height && (
-                  <div className="p-4 bg-sand-2 rounded-lg">
-                    <div className="text-sm text-sand-11 mb-1">Height</div>
-                    <div className="text-lg font-semibold text-sand-12">
-                      {fitbitUserData.height} cm
-                    </div>
-                  </div>
-                )}
-
-                {fitbitUserData.memberSinceFormatted && (
-                  <div className="p-4 bg-sand-2 rounded-lg">
-                    <div className="text-sm text-sand-11 mb-1">Member Since</div>
-                    <div className="text-lg font-semibold text-sand-12">
-                      {fitbitUserData.memberSinceFormatted}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Top Badges */}
-              {fitbitUserData.topBadges && fitbitUserData.topBadges.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-sand-12 mb-3">Top Badges</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {fitbitUserData.topBadges.map((badge, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-sand-2 rounded-lg flex flex-col items-center text-center"
-                      >
-                        <img
-                          src={badge.image100px}
-                          alt={badge.shortName}
-                          className="w-20 h-20 mb-2"
-                        />
-                        <div className="font-semibold text-sm text-sand-12">{badge.shortName}</div>
-                        <div className="text-xs text-sand-11 mt-1">{badge.description}</div>
+                  {fitbitUserData.gender && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Gender</div>
+                      <div className="text-lg font-semibold">
+                        {fitbitUserData.gender.charAt(0) +
+                          fitbitUserData.gender.slice(1).toLowerCase()}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
+
+                  {fitbitUserData.averageDailySteps !== undefined && (
+                    <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                      <div className="text-sm text-muted-foreground mb-1">Average Daily Steps</div>
+                      <div className="text-2xl font-bold text-primary">
+                        {fitbitUserData.averageDailySteps.toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {fitbitUserData.height && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Height</div>
+                      <div className="text-lg font-semibold">{fitbitUserData.height} cm</div>
+                    </div>
+                  )}
+
+                  {fitbitUserData.memberSinceFormatted && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Member Since</div>
+                      <div className="text-lg font-semibold">
+                        {fitbitUserData.memberSinceFormatted}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+
+                {/* Top Badges */}
+                {fitbitUserData.topBadges && fitbitUserData.topBadges.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-3">Top Badges</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {fitbitUserData.topBadges.map((badge, index) => (
+                        <div
+                          key={index}
+                          className="p-4 bg-muted rounded-lg flex flex-col items-center text-center"
+                        >
+                          <img
+                            src={badge.image100px}
+                            alt={badge.shortName}
+                            className="w-20 h-20 mb-2"
+                          />
+                          <div className="font-semibold text-sm">{badge.shortName}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {badge.description}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

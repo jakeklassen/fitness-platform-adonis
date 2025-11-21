@@ -1,7 +1,8 @@
+import ActivityStep from '#models/activity_step';
 import User from '#models/user';
 import encryption from '@adonisjs/core/services/encryption';
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
-import type { BelongsTo } from '@adonisjs/lucid/types/relations';
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm';
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
 
 export default class Account extends BaseModel {
@@ -48,4 +49,7 @@ export default class Account extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
+
+  @hasMany(() => ActivityStep)
+  declare activitySteps: HasMany<typeof ActivityStep>;
 }

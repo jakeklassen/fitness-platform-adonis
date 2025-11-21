@@ -1,4 +1,9 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Activity } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
 
 export default function Login() {
   const { data, setData, post, processing, errors } = useForm({
@@ -15,63 +20,70 @@ export default function Login() {
     <>
       <Head title="Login" />
 
-      <div className="min-h-screen flex items-center justify-center bg-sand-2">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-          <div>
-            <h2 className="text-center text-3xl font-bold text-sand-12">Sign in to your account</h2>
-            <p className="mt-2 text-center text-sm text-sand-11">
-              Don't have an account?{' '}
-              <a href="/register" className="font-medium text-primary hover:opacity-80">
-                Sign up
-              </a>
-            </p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Logo/Brand */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <Activity className="h-8 w-8" />
+            <span className="text-2xl font-bold">Fitness Platform</span>
           </div>
 
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-sand-12">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={data.email}
-                  onChange={(e) => setData('email', e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-sand-7 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                />
-                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-              </div>
+          <Card>
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
+              <CardDescription className="text-center">
+                Sign in to your account to continue
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={data.email}
+                    onChange={(e) => setData('email', e.target.value)}
+                    placeholder="you@example.com"
+                  />
+                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-sand-12">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={data.password}
-                  onChange={(e) => setData('password', e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-sand-7 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                />
-                {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={data.password}
+                    onChange={(e) => setData('password', e.target.value)}
+                    placeholder="Enter your password"
+                  />
+                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={processing}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
-              >
-                {processing ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-          </form>
+                <Button type="submit" disabled={processing} className="w-full">
+                  {processing ? 'Signing in...' : 'Sign in'}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center text-sm">
+                <span className="text-muted-foreground">Don't have an account? </span>
+                <Link href="/register" className="font-medium text-primary hover:underline">
+                  Sign up
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 text-center">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+              ← Back to home
+            </Link>
+          </div>
         </div>
       </div>
     </>

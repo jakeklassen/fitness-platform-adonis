@@ -44,4 +44,16 @@ export default await Env.create(new URL('../', import.meta.url), {
   FITBIT_CLIENT_ID: Env.schema.string(),
   FITBIT_CLIENT_SECRET: Env.schema.string(),
   FITBIT_CALLBACK_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | LensJs variables
+  |----------------------------------------------------------
+  */
+  LENS_BASE_PATH: Env.schema.string.optional(),
+  LENS_ENABLED: Env.schema.boolean.optional(),
+  LENS_ENABLE_QUERY_WATCHER: Env.schema.boolean.optional(),
+  LENS_ENABLE_REQUEST_WATCHER: Env.schema.boolean.optional(),
+  LENS_ENABLE_CACHE_WATCHER: Env.schema.boolean.optional(),
+  LENS_ENABLE_EXCEPTION_WATCHER: Env.schema.boolean.optional(),
 });
