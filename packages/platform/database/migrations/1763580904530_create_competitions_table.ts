@@ -14,7 +14,7 @@ export default class extends BaseSchema {
         .enum('goal_type', ['total_steps', 'goal_based'], {
           useNative: true,
           enumName: 'competition_goal_type',
-          existingType: true,
+          existingType: false,
         })
         .notNullable()
         .defaultTo('total_steps');
@@ -34,7 +34,7 @@ export default class extends BaseSchema {
         .enum('visibility', ['private', 'public'], {
           useNative: true,
           enumName: 'visibility',
-          existingType: true,
+          existingType: false,
         })
         .notNullable()
         .defaultTo('private');
@@ -42,7 +42,7 @@ export default class extends BaseSchema {
         .enum('status', ['draft', 'active', 'ended'], {
           useNative: true,
           enumName: 'competition_status',
-          existingType: true,
+          existingType: false,
         })
         .notNullable()
         .defaultTo('draft');

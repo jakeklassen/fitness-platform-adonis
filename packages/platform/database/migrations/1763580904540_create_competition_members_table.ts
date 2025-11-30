@@ -24,7 +24,7 @@ export default class extends BaseSchema {
         .enum('status', ['invited', 'accepted', 'declined'], {
           useNative: true,
           enumName: 'competition_member_status',
-          existingType: true,
+          existingType: false,
         })
         .notNullable()
         .defaultTo('invited');
