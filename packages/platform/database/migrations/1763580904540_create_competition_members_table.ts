@@ -24,6 +24,7 @@ export default class extends BaseSchema {
         .enum('status', ['invited', 'accepted', 'declined'], {
           useNative: true,
           enumName: 'competition_member_status',
+          existingType: true,
         })
         .notNullable()
         .defaultTo('invited');
@@ -48,5 +49,6 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.dropTable(this.tableName);
+    await this.db.rawQuery('DROP TYPE IF EXISTS competition_member_status');
   }
 }

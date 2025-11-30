@@ -14,15 +14,12 @@ export default class extends BaseSchema {
         .enum('goal_type', ['total_steps', 'goal_based'], {
           useNative: true,
           enumName: 'competition_goal_type',
+          existingType: true,
         })
         .notNullable()
         .defaultTo('total_steps');
       table.integer('goal_value').unsigned().nullable(); // For goal-based competitions
-      table
-        .integer('team_id')
-        .unsigned()
-        .nullable()
-        .comment('If set, this is a team competition');
+      table.integer('team_id').unsigned().nullable().comment('If set, this is a team competition');
       // .references('id')
       // .inTable('teams')
       // .onDelete('CASCADE'); // Uncomment when teams table exists
@@ -33,11 +30,19 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE');
-      table.enum('visibility', ['private', 'public'], { useNative: true, enumName: 'visibility' }).notNullable().defaultTo('private');
+      table
+        .enum('visibility', ['private', 'public'], {
+          useNative: true,
+          enumName: 'visibility',
+          existingType: true,
+        })
+        .notNullable()
+        .defaultTo('private');
       table
         .enum('status', ['draft', 'active', 'ended'], {
           useNative: true,
           enumName: 'competition_status',
+          existingType: true,
         })
         .notNullable()
         .defaultTo('draft');
@@ -56,5 +61,8 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.dropTable(this.tableName);
+    await this.db.rawQuery('DROP TYPE IF EXISTS competition_goal_type');
+    await this.db.rawQuery('DROP TYPE IF EXISTS visibility');
+    await this.db.rawQuery('DROP TYPE IF EXISTS competition_status');
   }
 }

@@ -1,7 +1,7 @@
-import User from '#models/user';
-import DailyStep from '#models/daily_step';
 import Competition from '#models/competition';
 import CompetitionMember from '#models/competition_member';
+import DailyStep from '#models/daily_step';
+import User from '#models/user';
 import { BaseSeeder } from '@adonisjs/lucid/seeders';
 import { DateTime } from 'luxon';
 
@@ -112,21 +112,66 @@ export default class extends BaseSeeder {
     const memberData = [
       // Competition 1 - Monthly Step Challenge (4 members)
       { competitionId: competition1.id, userId: users[0].id, status: 'accepted', invitedBy: null }, // Creator
-      { competitionId: competition1.id, userId: users[1].id, status: 'accepted', invitedBy: users[0].id },
-      { competitionId: competition1.id, userId: users[2].id, status: 'accepted', invitedBy: users[0].id },
-      { competitionId: competition1.id, userId: users[3].id, status: 'invited', invitedBy: users[0].id }, // Pending
+      {
+        competitionId: competition1.id,
+        userId: users[1].id,
+        status: 'accepted',
+        invitedBy: users[0].id,
+      },
+      {
+        competitionId: competition1.id,
+        userId: users[2].id,
+        status: 'accepted',
+        invitedBy: users[0].id,
+      },
+      {
+        competitionId: competition1.id,
+        userId: users[3].id,
+        status: 'invited',
+        invitedBy: users[0].id,
+      }, // Pending
 
       // Competition 2 - 10K Daily Goal (3 members)
       { competitionId: competition2.id, userId: users[1].id, status: 'accepted', invitedBy: null }, // Creator
-      { competitionId: competition2.id, userId: users[4].id, status: 'accepted', invitedBy: users[1].id },
-      { competitionId: competition2.id, userId: users[5].id, status: 'accepted', invitedBy: users[1].id },
+      {
+        competitionId: competition2.id,
+        userId: users[4].id,
+        status: 'accepted',
+        invitedBy: users[1].id,
+      },
+      {
+        competitionId: competition2.id,
+        userId: users[5].id,
+        status: 'accepted',
+        invitedBy: users[1].id,
+      },
 
       // Competition 3 - Summer Fitness Challenge (5 members)
       { competitionId: competition3.id, userId: users[2].id, status: 'accepted', invitedBy: null }, // Creator
-      { competitionId: competition3.id, userId: users[0].id, status: 'accepted', invitedBy: users[2].id },
-      { competitionId: competition3.id, userId: users[3].id, status: 'accepted', invitedBy: users[2].id },
-      { competitionId: competition3.id, userId: users[4].id, status: 'invited', invitedBy: users[2].id }, // Pending
-      { competitionId: competition3.id, userId: users[5].id, status: 'declined', invitedBy: users[2].id }, // Declined
+      {
+        competitionId: competition3.id,
+        userId: users[0].id,
+        status: 'accepted',
+        invitedBy: users[2].id,
+      },
+      {
+        competitionId: competition3.id,
+        userId: users[3].id,
+        status: 'accepted',
+        invitedBy: users[2].id,
+      },
+      {
+        competitionId: competition3.id,
+        userId: users[4].id,
+        status: 'invited',
+        invitedBy: users[2].id,
+      }, // Pending
+      {
+        competitionId: competition3.id,
+        userId: users[5].id,
+        status: 'declined',
+        invitedBy: users[2].id,
+      }, // Declined
     ];
 
     await CompetitionMember.createMany(memberData);

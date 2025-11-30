@@ -128,8 +128,8 @@ export default function FriendsCreate({ flash }: Props) {
 
           {/* Flash Messages */}
           {flash?.success && (
-            <Alert className="mb-6 bg-green-50 border-green-200">
-              <AlertDescription className="text-green-800">{flash.success}</AlertDescription>
+            <Alert className="mb-6 border-success/50 bg-success/10">
+              <AlertDescription>{flash.success}</AlertDescription>
             </Alert>
           )}
           {flash?.error && (
@@ -171,8 +171,8 @@ export default function FriendsCreate({ flash }: Props) {
 
           {/* Search Message */}
           {searchMessage && (
-            <Alert className="mb-6 bg-amber-50 border-amber-200">
-              <AlertDescription className="text-amber-800">{searchMessage}</AlertDescription>
+            <Alert className="mb-6 border-warning/50 bg-warning/10">
+              <AlertDescription>{searchMessage}</AlertDescription>
             </Alert>
           )}
 
@@ -197,7 +197,7 @@ export default function FriendsCreate({ flash }: Props) {
           )}
 
           {/* Privacy Notice */}
-          <Alert className="mb-6 bg-primary/5 border-primary/20">
+          <Alert className="mb-6 border-info/50 bg-info/10">
             <AlertDescription>
               <strong className="font-semibold">Privacy Notice:</strong> For privacy reasons, you
               can only add friends by their email address. Make sure you have the correct email

@@ -1,11 +1,19 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import type { PageProps } from '@adonisjs/inertia/types';
 import { Activity } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import { Alert, AlertDescription } from '~/components/ui/alert';
 
-export default function Login() {
+interface Props extends PageProps {
+  flash?: {
+    error?: string;
+  };
+}
+
+export default function Login({ flash }: Props) {
   const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
@@ -27,6 +35,13 @@ export default function Login() {
             <Activity className="h-8 w-8" />
             <span className="text-2xl font-bold">Fitness Platform</span>
           </div>
+
+          {/* Flash Error Message */}
+          {flash?.error && (
+            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
+              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
+            </Alert>
+          )}
 
           <Card>
             <CardHeader className="space-y-1">

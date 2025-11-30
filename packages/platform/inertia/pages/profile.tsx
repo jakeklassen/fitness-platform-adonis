@@ -61,8 +61,8 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
         <div className="container mx-auto max-w-screen-xl px-4 py-8">
           {/* Flash Messages */}
           {flash?.success && (
-            <Alert className="mb-6 bg-green-50 border-green-200">
-              <AlertDescription className="text-green-800">{flash.success}</AlertDescription>
+            <Alert className="mb-6 border-success/50 bg-success/10">
+              <AlertDescription>{flash.success}</AlertDescription>
             </Alert>
           )}
           {flash?.error && (

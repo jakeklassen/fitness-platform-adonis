@@ -33,13 +33,18 @@ export default class AuthController {
   /**
    * Handle user login
    */
-  async login({ request, auth, response }: HttpContext) {
+  async login({ request, auth, response, session }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator);
 
-    const user = await User.verifyCredentials(email, password);
-    await auth.use('web').login(user);
+    try {
+      const user = await User.verifyCredentials(email, password);
+      await auth.use('web').login(user);
 
-    return response.redirect('/profile');
+      return response.redirect('/profile');
+    } catch (error) {
+      session.flash('error', 'Invalid email or password');
+      return response.redirect().back();
+    }
   }
 
   /**

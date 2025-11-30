@@ -111,18 +111,31 @@ export default function CompetitionShow({
   };
 
   const getRankIcon = (rank: number) => {
-    const iconClass = 'w-5 h-5';
-    if (rank === 1) return <Trophy className={cn(iconClass, 'text-yellow-500')} />;
-    if (rank === 2) return <Medal className={cn(iconClass, 'text-gray-400')} />;
-    if (rank === 3) return <Award className={cn(iconClass, 'text-amber-600')} />;
+    if (rank === 1) return <Trophy className="w-6 h-6 text-muted-foreground" />;
+    if (rank === 2) return <Medal className="w-5 h-5 text-muted-foreground" />;
+    if (rank === 3) return <Award className="w-5 h-5 text-muted-foreground" />;
     return null;
   };
 
-  const getRankRowClass = (rank: number) => {
-    if (rank === 1) return 'bg-yellow-50/50 border-l-4 border-l-yellow-500';
-    if (rank === 2) return 'bg-gray-50/50 border-l-4 border-l-gray-400';
-    if (rank === 3) return 'bg-amber-50/50 border-l-4 border-l-amber-600';
-    return '';
+  const getRankTextSize = (rank: number) => {
+    if (rank === 1) return 'text-lg';
+    if (rank === 2) return 'text-base';
+    if (rank === 3) return 'text-base';
+    return 'text-sm';
+  };
+
+  const getNameTextSize = (rank: number) => {
+    if (rank === 1) return 'text-lg font-semibold';
+    if (rank === 2) return 'text-base font-semibold';
+    if (rank === 3) return 'text-base font-medium';
+    return 'font-medium';
+  };
+
+  const getStepsTextSize = (rank: number) => {
+    if (rank === 1) return 'text-lg font-bold';
+    if (rank === 2) return 'text-base font-bold';
+    if (rank === 3) return 'text-base font-semibold';
+    return 'font-semibold';
   };
 
   return (
@@ -160,8 +173,8 @@ export default function CompetitionShow({
         <div className="container mx-auto max-w-screen-xl px-4 py-8">
           {/* Flash Messages */}
           {flash?.success && (
-            <Alert className="mb-6 bg-green-50 border-green-200">
-              <AlertDescription className="text-green-800">{flash.success}</AlertDescription>
+            <Alert className="mb-6 border-success/50 bg-success/10">
+              <AlertDescription>{flash.success}</AlertDescription>
             </Alert>
           )}
           {flash?.error && (
@@ -248,7 +261,7 @@ export default function CompetitionShow({
               <Card>
                 <CardHeader className="pb-3">
                   <CardDescription>Active Participants</CardDescription>
-                  <CardTitle className="text-3xl text-green-600">
+                  <CardTitle className="text-3xl text-success">
                     {stats.activeParticipants}
                   </CardTitle>
                 </CardHeader>
@@ -285,16 +298,18 @@ export default function CompetitionShow({
                   </TableHeader>
                   <TableBody>
                     {leaderboard.map((entry) => (
-                      <TableRow key={entry.userId} className={cn(getRankRowClass(entry.rank))}>
+                      <TableRow key={entry.userId}>
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {getRankIcon(entry.rank)}
-                            <span className="font-semibold">#{entry.rank}</span>
+                            <span className={cn('font-semibold', getRankTextSize(entry.rank))}>
+                              #{entry.rank}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium">
+                            <div className={getNameTextSize(entry.rank)}>
                               {entry.user.fullName || entry.user.email}
                             </div>
                             {entry.user.fullName && (
@@ -304,13 +319,13 @@ export default function CompetitionShow({
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className={cn('text-right', getStepsTextSize(entry.rank))}>
                           {entry.totalSteps.toLocaleString()}
                         </TableCell>
                         {competition.goalType === 'goal_based' && (
                           <TableCell className="text-center">
                             {entry.goalReached ? (
-                              <Badge variant="default" className="bg-green-600">
+                              <Badge variant="default" className="bg-success text-success-foreground">
                                 <Check className="mr-1 h-3 w-3" />
                                 Goal Reached
                               </Badge>
