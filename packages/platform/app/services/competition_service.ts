@@ -2,9 +2,9 @@ import Competition from '#models/competition';
 import CompetitionMember from '#models/competition_member';
 import DailyStep from '#models/daily_step';
 import User from '#models/user';
-import { DateTime } from 'luxon';
 import { StepsBackfillService } from '#services/steps_backfill_service';
 import logger from '@adonisjs/core/services/logger';
+import { DateTime } from 'luxon';
 
 export interface LeaderboardEntry {
   userId: number;
@@ -28,7 +28,7 @@ export class CompetitionService {
    */
   async getLeaderboard(
     competitionId: number,
-    requestingUserId: number
+    requestingUserId: number,
   ): Promise<LeaderboardEntry[]> {
     const competition = await Competition.findOrFail(competitionId);
 
@@ -84,7 +84,7 @@ export class CompetitionService {
    */
   async getCompetitionStats(
     competitionId: number,
-    requestingUserId: number
+    requestingUserId: number,
   ): Promise<CompetitionStats> {
     const leaderboard = await this.getLeaderboard(competitionId, requestingUserId);
 
@@ -107,7 +107,7 @@ export class CompetitionService {
   async inviteUser(
     competitionId: number,
     userIdToInvite: number,
-    invitedByUserId: number
+    invitedByUserId: number,
   ): Promise<CompetitionMember> {
     const competition = await Competition.findOrFail(competitionId);
 
@@ -250,7 +250,9 @@ export class CompetitionService {
     const startDate = competition.startDate;
     const endDate = competition.endDate < today ? competition.endDate : today;
 
-    logger.info(`Triggering backfill for user ${userId} in competition ${competitionId} from ${startDate.toISODate()} to ${endDate.toISODate()}`);
+    logger.info(
+      `Triggering backfill for user ${userId} in competition ${competitionId} from ${startDate.toISODate()} to ${endDate.toISODate()}`,
+    );
 
     try {
       await backfillService.backfillSteps(userId, startDate, endDate);
@@ -268,7 +270,10 @@ export class CompetitionService {
   async triggerBackfillForCreator(competitionId: number, userId: number): Promise<void> {
     // Fire and forget
     this.triggerBackfillForUser(competitionId, userId).catch((error) => {
-      logger.error(`Creator backfill failed for user ${userId} in competition ${competitionId}:`, error);
+      logger.error(
+        `Creator backfill failed for user ${userId} in competition ${competitionId}:`,
+        error,
+      );
     });
   }
 
@@ -291,7 +296,9 @@ export class CompetitionService {
       const needsBackfill = await backfillService.needsBackfill(member.userId, startDate, endDate);
 
       if (needsBackfill) {
-        logger.info(`Triggering gap-fill for user ${member.userId} in competition ${competitionId}`);
+        logger.info(
+          `Triggering gap-fill for user ${member.userId} in competition ${competitionId}`,
+        );
 
         // Fire and forget
         this.triggerBackfillForUser(competitionId, member.userId).catch((error) => {

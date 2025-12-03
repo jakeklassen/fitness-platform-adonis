@@ -54,7 +54,7 @@ export class FitbitService {
     account: Account,
     resource: string,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<ActivityTimeSeriesData[]> {
     try {
       // Get valid access token (automatically refreshes if expired)
@@ -72,8 +72,8 @@ export class FitbitService {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Accept': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
         },
       });
 
@@ -100,7 +100,7 @@ export class FitbitService {
   async getStepsTimeSeries(
     account: Account,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<ActivityTimeSeriesData[]> {
     return this.getActivityTimeSeries(account, 'steps', startDate, endDate);
   }

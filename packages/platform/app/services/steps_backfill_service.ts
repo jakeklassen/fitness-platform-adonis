@@ -3,8 +3,8 @@ import ActivityStep from '#models/activity_step';
 import User from '#models/user';
 import { FitbitService } from '#services/fitbit_service';
 import { StepsAggregationService } from '#services/steps_aggregation_service';
-import { DateTime } from 'luxon';
 import logger from '@adonisjs/core/services/logger';
+import { DateTime } from 'luxon';
 
 export class StepsBackfillService {
   /**
@@ -26,7 +26,9 @@ export class StepsBackfillService {
         return;
       }
 
-      logger.info(`Starting backfill for user ${userId} from ${startDate.toISODate()} to ${endDate.toISODate()}`);
+      logger.info(
+        `Starting backfill for user ${userId} from ${startDate.toISODate()} to ${endDate.toISODate()}`,
+      );
 
       // Get existing dates we already have data for
       const existingDates = await this.getExistingDataDates(account.id, startDate, endDate);
@@ -88,21 +90,16 @@ export class StepsBackfillService {
   private async getExistingDataDates(
     accountId: number,
     startDate: DateTime,
-    endDate: DateTime
+    endDate: DateTime,
   ): Promise<Set<string>> {
     const existingRecords = await ActivityStep.query()
       .where('account_id', accountId)
       .where('granularity', 'daily')
-      .whereBetween('date', [
-        startDate.toSQLDate()!,
-        endDate.toSQLDate()!,
-      ])
+      .whereBetween('date', [startDate.toSQLDate()!, endDate.toSQLDate()!])
       .select('date');
 
     // Convert DateTime objects to ISO date strings
-    return new Set(
-      existingRecords.map(r => r.date.toISODate()!)
-    );
+    return new Set(existingRecords.map((r) => r.date.toISODate()!));
   }
 
   /**
@@ -111,7 +108,7 @@ export class StepsBackfillService {
   private getMissingDates(
     startDate: DateTime,
     endDate: DateTime,
-    existingDates: Set<string>
+    existingDates: Set<string>,
   ): DateTime[] {
     const missing: DateTime[] = [];
     let current = startDate.startOf('day');
@@ -147,7 +144,7 @@ export class StepsBackfillService {
   private async fetchAndStoreChunk(
     fitbitService: FitbitService,
     account: Account,
-    dates: DateTime[]
+    dates: DateTime[],
   ): Promise<string[]> {
     if (dates.length === 0) return [];
 
@@ -162,7 +159,7 @@ export class StepsBackfillService {
         account,
         'steps',
         startDate,
-        endDate
+        endDate,
       );
 
       logger.debug(`Received ${stepsData.length} days of data from Fitbit`);
@@ -180,9 +177,9 @@ export class StepsBackfillService {
             granularity: 'daily',
           },
           {
-            steps: parseInt(dayData.value, 10),
+            steps: Number.parseInt(dayData.value, 10),
             syncedAt: now,
-          }
+          },
         );
         fetchedDates.push(dayData.dateTime);
       }
@@ -199,7 +196,7 @@ export class StepsBackfillService {
    * Simple delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**

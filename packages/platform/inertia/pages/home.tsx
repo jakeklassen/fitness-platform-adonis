@@ -22,8 +22,8 @@ export default function Home() {
 
       <div className="min-h-screen bg-background">
         {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-screen-xl items-center px-4">
+        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
             <div className="mr-auto flex items-center gap-2">
               <Activity className="h-6 w-6" />
               <span className="text-xl font-bold">Fitness Platform</span>
@@ -60,7 +60,7 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <div className="container mx-auto max-w-screen-xl px-4 py-24 lg:py-32">
+        <div className="container mx-auto max-w-7xl px-4 py-24 lg:py-32">
           {user ? (
             <div className="mx-auto max-w-4xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
@@ -82,7 +82,7 @@ export default function Home() {
             <div className="mx-auto max-w-4xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
                 Turn Fitness Into{' '}
-                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                   Friendly Competition
                 </span>
               </h1>
@@ -107,7 +107,7 @@ export default function Home() {
 
         {/* Features Grid */}
         <div className="border-t bg-muted/50">
-          <div className="container mx-auto max-w-screen-xl px-4 py-24">
+          <div className="container mx-auto max-w-7xl px-4 py-24">
             <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
               <Card>
                 <CardHeader>
@@ -152,7 +152,7 @@ export default function Home() {
         </div>
 
         {/* How It Works Section */}
-        <div className="container mx-auto max-w-screen-xl px-4 py-24">
+        <div className="container mx-auto max-w-7xl px-4 py-24">
           <div className="mx-auto max-w-5xl">
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
               How It Works
@@ -194,7 +194,7 @@ export default function Home() {
         {/* CTA Section */}
         {!user && (
           <div className="border-t bg-muted/50">
-            <div className="container mx-auto max-w-screen-xl px-4 py-24">
+            <div className="container mx-auto max-w-7xl px-4 py-24">
               <div className="mx-auto max-w-4xl text-center">
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
                   Ready to Get Moving?
@@ -217,7 +217,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="border-t">
-          <div className="container mx-auto max-w-screen-xl px-4 py-8 text-center text-sm text-muted-foreground">
+          <div className="container mx-auto max-w-7xl px-4 py-8 text-center text-sm text-muted-foreground">
             <p>Built with AdonisJS</p>
           </div>
         </footer>
