@@ -1,12 +1,12 @@
 import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, router as inertiaRouter, Link, useForm } from '@inertiajs/react';
 import { Activity } from 'lucide-react';
 import { FormEvent } from 'react';
+import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Textarea } from '~/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -14,8 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { Alert, AlertDescription } from '~/components/ui/alert';
-import { router as inertiaRouter } from '@inertiajs/react';
+import { Textarea } from '~/components/ui/textarea';
 
 interface Competition {
   id: number;
@@ -91,8 +90,8 @@ export default function CompetitionForm({ competition, isEdit, flash }: Props) {
 
       <div className="min-h-screen bg-background">
         {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-screen-xl items-center px-4">
+        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
             <div className="mr-auto flex items-center gap-2">
               <Activity className="h-6 w-6" />
               <Link href="/" className="text-xl font-bold">

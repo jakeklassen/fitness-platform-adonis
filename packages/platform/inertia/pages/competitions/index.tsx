@@ -1,10 +1,10 @@
-import { Head, Link, router } from '@inertiajs/react';
 import type { PageProps } from '@adonisjs/inertia/types';
+import { Head, Link, router } from '@inertiajs/react';
 import { Activity, Calendar, Plus, Target, User } from 'lucide-react';
+import { Alert, AlertDescription } from '~/components/ui/alert';
+import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
-import { Badge } from '~/components/ui/badge';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 
 interface Competition {
   id: number;
@@ -86,8 +86,8 @@ export default function CompetitionsIndex({ competitions, flash }: Props) {
 
       <div className="min-h-screen bg-background">
         {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-screen-xl items-center px-4">
+        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
             <div className="mr-auto flex items-center gap-2">
               <Activity className="h-6 w-6" />
               <Link href="/" className="text-xl font-bold">
@@ -112,7 +112,7 @@ export default function CompetitionsIndex({ competitions, flash }: Props) {
           </div>
         </nav>
 
-        <div className="container mx-auto max-w-screen-xl px-4 py-8">
+        <div className="container mx-auto max-w-7xl px-4 py-8">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
