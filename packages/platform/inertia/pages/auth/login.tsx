@@ -3,6 +3,7 @@ import type { PageProps } from '@adonisjs/inertia/types';
 import { Activity } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Checkbox } from '~/components/ui/checkbox';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Alert, AlertDescription } from '~/components/ui/alert';
@@ -17,6 +18,7 @@ export default function Login({ flash }: Props) {
   const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
+    rememberMe: false,
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -78,6 +80,17 @@ export default function Login({ flash }: Props) {
                     placeholder="Enter your password"
                   />
                   {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={data.rememberMe}
+                    onCheckedChange={(checked) => setData('rememberMe', checked === true)}
+                  />
+                  <Label htmlFor="rememberMe" className="text-sm cursor-pointer font-normal">
+                    Remember me
+                  </Label>
                 </div>
 
                 <Button type="submit" disabled={processing} className="w-full">

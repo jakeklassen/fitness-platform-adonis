@@ -3,6 +3,7 @@ import CompetitionMember from '#models/competition_member';
 import DailyStep from '#models/daily_step';
 import Friendship from '#models/friendship';
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid';
+import { DbRememberMeTokensProvider } from '@adonisjs/auth/session';
 import { compose } from '@adonisjs/core/helpers';
 import hash from '@adonisjs/core/services/hash';
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm';
@@ -15,6 +16,8 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 });
 
 export default class User extends compose(BaseModel, AuthFinder) {
+  static rememberMeTokens = DbRememberMeTokensProvider.forModel(User);
+
   @column({ isPrimary: true })
   declare id: number;
 

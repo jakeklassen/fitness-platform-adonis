@@ -34,11 +34,11 @@ export default class AuthController {
    * Handle user login
    */
   async login({ request, auth, response, session }: HttpContext) {
-    const { email, password } = await request.validateUsing(loginValidator);
+    const { email, password, rememberMe } = await request.validateUsing(loginValidator);
 
     try {
       const user = await User.verifyCredentials(email, password);
-      await auth.use('web').login(user);
+      await auth.use('web').login(user, !!rememberMe);
 
       return response.redirect('/profile');
     } catch (error) {
