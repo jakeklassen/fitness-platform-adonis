@@ -38,7 +38,7 @@ export default class AuthController {
 
     try {
       const user = await User.verifyCredentials(email, password);
-      await auth.use('web').login(user, !!rememberMe);
+      await auth.use('web').login(user, Boolean(rememberMe));
 
       return response.redirect('/profile');
     } catch (error) {
