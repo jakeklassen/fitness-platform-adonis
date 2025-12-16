@@ -1,7 +1,16 @@
 import ProfilesController from '#controllers/profiles_controller';
 import { InferPageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Activity, Link as LinkIcon, Unlink, Watch, Star, Battery, HelpCircle, Check } from 'lucide-react';
+import {
+  Activity,
+  Battery,
+  Check,
+  HelpCircle,
+  Link as LinkIcon,
+  Star,
+  Unlink,
+  Watch,
+} from 'lucide-react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
 import {
   AlertDialog,
@@ -112,19 +121,19 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <button className="rounded-full p-1 hover:bg-accent transition-colors">
+                    <button className="cursor-pointer rounded-full p-1 hover:bg-accent transition-colors">
                       <HelpCircle className="w-4 h-4 text-muted-foreground" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="max-w-xs">
                     <p className="text-sm">
                       Your preferred provider is used when you have multiple fitness tracker
-                      accounts connected.
+                      providers connected.
                     </p>
                     <br />
                     <p className="text-sm">
-                      Activity data from your preferred provider will be used for features like
-                      competitions and leaderboards if it overlaps with data from other providers.
+                      Activity data from your preferred provider will be used whenever there is
+                      overlap with other connected providers.
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -164,7 +173,6 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                           {!isPreferredProvider && accounts.length > 1 && (
                             <Button
                               variant="outline"
-                              size="sm"
                               onClick={() => handleSetPreferredProvider(account.provider)}
                               className="cursor-pointer whitespace-nowrap"
                             >
@@ -173,16 +181,17 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                           )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm" className="cursor-pointer">
-                                Unlink
+                              <Button className="cursor-pointer bg-destructive/60 text-white hover:bg-destructive/80">
+                                <Unlink className="mr-2 h-4 w-4" />
+                                Disconnect
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Unlink {providerName}?</AlertDialogTitle>
+                                <AlertDialogTitle>Disconnect {providerName}?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to unlink your {providerName} account? You
-                                  will no longer be able to sync fitness data from this account.
+                                  Are you sure you want to disconnect your {providerName} account?
+                                  You will no longer be able to sync fitness data from this account.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -191,9 +200,10 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleUnlinkAccount(account.id)}
-                                  className="cursor-pointer bg-destructive text-white hover:bg-destructive/90"
+                                  className="cursor-pointer bg-destructive/60 text-white hover:bg-destructive/80"
                                 >
-                                  Unlink Account
+                                  <Unlink className="mr-2 h-4 w-4" />
+                                  Disconnect
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -257,8 +267,12 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" onClick={handleLinkFitbit} className="cursor-pointer">
-                      Link Account
+                    <Button
+                      onClick={handleLinkFitbit}
+                      className="cursor-pointer bg-emerald-600/60 text-white hover:bg-emerald-600/80"
+                    >
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Connect
                     </Button>
                   </div>
                 )}
