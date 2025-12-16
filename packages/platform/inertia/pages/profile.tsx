@@ -1,13 +1,25 @@
 import ProfilesController from '#controllers/profiles_controller';
 import { InferPageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Activity, Link as LinkIcon, Unlink } from 'lucide-react';
+import { Activity, Link as LinkIcon, Unlink, Watch, Star, Battery, HelpCircle, Check } from 'lucide-react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 
 export default function Profile(props: InferPageProps<ProfilesController, 'show'>) {
-  const { user, accounts, flash, fitbitUserData } = props;
+  const { user, accounts, flash, fitbitUserData, preferredProvider } = props;
 
   const handleLogout = () => {
     router.post('/logout');
@@ -18,9 +30,11 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
   };
 
   const handleUnlinkAccount = (accountId: number) => {
-    if (confirm('Are you sure you want to unlink this account?')) {
-      router.delete(`/profile/accounts/${accountId}`);
-    }
+    router.delete(`/profile/accounts/${accountId}`);
+  };
+
+  const handleSetPreferredProvider = (provider: string) => {
+    router.post('/profile/set-preferred-provider', { provider });
   };
 
   const fitbitAccount = accounts.find((account) => account.provider === 'fitbit');
@@ -90,58 +104,165 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
 
           {/* Connected Accounts */}
           <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-2xl">Connected Accounts</CardTitle>
-              <CardDescription>Manage your connected fitness tracker accounts</CardDescription>
+            <CardHeader className="relative">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1.5">
+                  <CardTitle className="text-2xl">Connected Accounts</CardTitle>
+                  <CardDescription>Manage your connected fitness tracker accounts</CardDescription>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="rounded-full p-1 hover:bg-accent transition-colors">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="max-w-xs">
+                    <p className="text-sm">
+                      Your preferred provider is used when you have multiple fitness tracker
+                      accounts connected.
+                    </p>
+                    <br />
+                    <p className="text-sm">
+                      Activity data from your preferred provider will be used for features like
+                      competitions and leaderboards if it overlaps with data from other providers.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-lg p-6 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#00B0B9] rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">Fitbit</h3>
-                    {fitbitAccount ? (
-                      <p className="text-sm text-muted-foreground">
-                        Connected • User ID: {fitbitAccount.providerId}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">Not connected</p>
-                    )}
-                  </div>
-                </div>
+              <div className="space-y-4">
+                {accounts.map((account) => {
+                  const isPreferredProvider =
+                    account.provider === preferredProvider || accounts.length === 1;
+                  const providerName =
+                    account.provider.charAt(0).toUpperCase() + account.provider.slice(1);
 
-                {fitbitAccount ? (
-                  <Button variant="destructive" onClick={() => handleUnlinkAccount(fitbitAccount.id)}>
-                    <Unlink className="mr-2 h-4 w-4" />
-                    Disconnect
-                  </Button>
-                ) : (
-                  <Button onClick={handleLinkFitbit}>
-                    <LinkIcon className="mr-2 h-4 w-4" />
-                    Connect
-                  </Button>
+                  return (
+                    <div key={account.id} className="border rounded-lg overflow-hidden">
+                      {/* Account Header */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 p-4 bg-muted/30">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <Activity className="w-8 h-8 text-cyan-500 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-medium flex flex-wrap items-center gap-2">
+                              {providerName}
+                              <Check className="w-4 h-4 text-green-600 shrink-0" />
+                              {isPreferredProvider && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300">
+                                  <Star className="w-3 h-3 fill-current" />
+                                  Preferred
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Connected since {account.createdAtFormatted}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {!isPreferredProvider && accounts.length > 1 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSetPreferredProvider(account.provider)}
+                              className="cursor-pointer whitespace-nowrap"
+                            >
+                              Set Preferred
+                            </Button>
+                          )}
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm" className="cursor-pointer">
+                                Unlink
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Unlink {providerName}?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to unlink your {providerName} account? You
+                                  will no longer be able to sync fitness data from this account.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="cursor-pointer">
+                                  Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleUnlinkAccount(account.id)}
+                                  className="cursor-pointer bg-destructive text-white hover:bg-destructive/90"
+                                >
+                                  Unlink Account
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+
+                      {/* Devices List */}
+                      {account.devices && account.devices.length > 0 && (
+                        <div className="p-4 space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+                            Connected Devices ({account.devices.length})
+                          </p>
+                          {account.devices.map((device: any) => (
+                            <div
+                              key={device.id}
+                              className="flex items-center gap-3 p-3 rounded-md bg-muted/20 border"
+                            >
+                              <Watch className="w-5 h-5 text-muted-foreground shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium flex flex-wrap items-center gap-2">
+                                  {device.deviceVersion}
+                                  <span
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                      device.battery === 'Empty' || !device.battery
+                                        ? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                        : device.battery === 'High'
+                                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                          : device.battery === 'Medium'
+                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                    }`}
+                                  >
+                                    <Battery className="w-3 h-3" />
+                                    {device.battery === 'Empty' || !device.battery
+                                      ? 'N/A'
+                                      : device.battery}
+                                  </span>
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Last synced: {new Date(device.lastSyncTime).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Show link button if no Fitbit connected */}
+                {!fitbitAccount && (
+                  <div className="flex items-center justify-between p-4 border rounded-lg border-dashed">
+                    <div className="flex items-center gap-3">
+                      <Activity className="w-8 h-8 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">Fitbit</p>
+                        <p className="text-sm text-muted-foreground">
+                          Track your activity, heart rate, and sleep data.
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" onClick={handleLinkFitbit} className="cursor-pointer">
+                      Link Account
+                    </Button>
+                  </div>
                 )}
               </div>
-
-              {fitbitAccount && (
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <h4 className="font-semibold mb-2">Account Details</h4>
-                  <dl className="grid grid-cols-1 gap-2 text-sm">
-                    <div>
-                      <dt className="text-muted-foreground">Provider ID:</dt>
-                      <dd className="font-mono">{fitbitAccount.providerId}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Connected on:</dt>
-                      <dd>{fitbitAccount.createdAtFormatted}</dd>
-                    </div>
-                  </dl>
-                </div>
-              )}
             </CardContent>
           </Card>
 

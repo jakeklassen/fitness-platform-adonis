@@ -104,4 +104,39 @@ export class FitbitService {
   ): Promise<ActivityTimeSeriesData[]> {
     return this.getActivityTimeSeries(account, 'steps', startDate, endDate);
   }
+
+  /**
+   * Get user's connected Fitbit devices
+   */
+  async getDevices(account: Account | null) {
+    if (!account) {
+      return null;
+    }
+
+    try {
+      const accessToken = await this.tokenRefreshService.getValidAccessToken(account);
+
+      if (!accessToken) {
+        return null;
+      }
+
+      const endpoint = 'https://api.fitbit.com/1/user/-/devices.json';
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error('FitBit devices API error:', response.status, response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching Fitbit devices:', error);
+      return null;
+    }
+  }
 }
