@@ -37,6 +37,9 @@ router
     router
       .delete('/profile/accounts/:id', [ProfilesController, 'unlinkAccount'])
       .as('profile.accounts.unlink');
+    router
+      .post('/profile/set-preferred-provider', [ProfilesController, 'setPreferredProvider'])
+      .as('profile.set-preferred-provider');
 
     // Fitbit OAuth
     router.get('/auth/fitbit', [FitbitsController, 'redirect']).as('fitbit.redirect');

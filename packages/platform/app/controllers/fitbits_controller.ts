@@ -7,7 +7,7 @@ export default class FitbitsController {
    */
   async redirect({ ally }: HttpContext) {
     return ally.use('fitbit').redirect((request) => {
-      request.scopes(['profile', 'activity', 'heartrate', 'sleep']);
+      request.scopes(['profile', 'activity', 'heartrate', 'sleep', 'settings']);
     });
   }
 
