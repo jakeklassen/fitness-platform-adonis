@@ -24,7 +24,7 @@ export default class ProfilesController {
     const accountsWithDevices = await Promise.all(
       Array.from(user.accounts).map(async (account) => {
         const accountDto = new AccountDto(account).toJson();
-        let devices = null;
+        let devices = [];
 
         // Only fetch devices for Fitbit accounts for now
         if (account.provider === 'fitbit') {
@@ -33,7 +33,7 @@ export default class ProfilesController {
 
         return {
           ...accountDto,
-          devices: devices || [],
+          devices,
         };
       }),
     );
