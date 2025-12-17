@@ -1,6 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Activity, Award, Calendar, Check, Edit, Medal, Target, Trash2, Trophy, User, UserPlus } from 'lucide-react';
+import { Award, Calendar, Check, Edit, Medal, Target, Trash2, Trophy, User, UserPlus } from 'lucide-react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
+import AuthenticatedLayout from '~/layouts/authenticated-layout';
 import { cn } from '~/lib/utils';
 
 interface User {
@@ -106,10 +107,6 @@ export default function CompetitionShow({
     }
   };
 
-  const handleLogout = () => {
-    router.post('/logout');
-  };
-
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="w-6 h-6 text-muted-foreground" />;
     if (rank === 2) return <Medal className="w-5 h-5 text-muted-foreground" />;
@@ -139,38 +136,10 @@ export default function CompetitionShow({
   };
 
   return (
-    <>
+    <AuthenticatedLayout>
       <Head title={competition.name} />
 
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
-            <div className="mr-auto flex items-center gap-2">
-              <Activity className="h-6 w-6" />
-              <Link href="/" className="text-xl font-bold">
-                Fitness Platform
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                <Link href="/profile">Profile</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/friends">Friends</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/competitions">Competitions</Link>
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                Log Out
-              </Button>
-            </div>
-          </div>
-        </nav>
-
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
           {/* Flash Messages */}
           {flash?.success && (
             <Alert className="mb-6 border-success/50 bg-success/10">
@@ -364,8 +333,7 @@ export default function CompetitionShow({
               <Link href="/competitions">← Back to Competitions</Link>
             </Button>
           </div>
-        </div>
       </div>
-    </>
+    </AuthenticatedLayout>
   );
 }

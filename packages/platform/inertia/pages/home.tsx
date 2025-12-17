@@ -1,9 +1,10 @@
 import User from '#models/user';
 import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Activity, TrendingUp, Users, Zap } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
 interface HomeProps extends PageProps {
   user?: User;
@@ -12,55 +13,31 @@ interface HomeProps extends PageProps {
 export default function Home() {
   const { user } = usePage<HomeProps>().props;
 
-  const handleLogout = () => {
-    router.post('/logout');
-  };
+  // Guest navigation
+  const guestNav = (
+    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
+        <div className="mr-auto flex items-center gap-2">
+          <Activity className="h-6 w-6" />
+          <span className="text-xl font-bold">Fitness Platform</span>
+        </div>
 
-  return (
-    <>
-      <Head title="Welcome to Fitness Platform" />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/login">Log In</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Sign Up Free</Link>
+          </Button>
+        </div>
+      </div>
+    </nav>
+  );
 
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
-            <div className="mr-auto flex items-center gap-2">
-              <Activity className="h-6 w-6" />
-              <span className="text-xl font-bold">Fitness Platform</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {user ? (
-                <>
-                  <Button variant="ghost" asChild>
-                    <Link href="/profile">Profile</Link>
-                  </Button>
-                  <Button variant="ghost" asChild>
-                    <Link href="/friends">Friends</Link>
-                  </Button>
-                  <Button variant="ghost" asChild>
-                    <Link href="/competitions">Competitions</Link>
-                  </Button>
-                  <Button variant="outline" onClick={handleLogout}>
-                    Log Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" asChild>
-                    <Link href="/login">Log In</Link>
-                  </Button>
-                  <Button asChild>
-                    <Link href="/register">Sign Up Free</Link>
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </nav>
-
-        {/* Hero Section */}
-        <div className="container mx-auto max-w-7xl px-4 py-24 lg:py-32">
+  const pageContent = (
+    <div>
+      {/* Hero Section */}
+      <div className="container mx-auto max-w-7xl px-4 py-24 lg:py-32">
           {user ? (
             <div className="mx-auto max-w-4xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
@@ -215,12 +192,30 @@ export default function Home() {
           </div>
         )}
 
-        {/* Footer */}
-        <footer className="border-t">
-          <div className="container mx-auto max-w-7xl px-4 py-8 text-center text-sm text-muted-foreground">
-            <p>Built with AdonisJS</p>
-          </div>
-        </footer>
+      {/* Footer */}
+      <footer className="border-t">
+        <div className="container mx-auto max-w-7xl px-4 py-8 text-center text-sm text-muted-foreground">
+          <p>Built with AdonisJS</p>
+        </div>
+      </footer>
+    </div>
+  );
+
+  if (user) {
+    return (
+      <AuthenticatedLayout>
+        <Head title="Welcome to Fitness Platform" />
+        {pageContent}
+      </AuthenticatedLayout>
+    );
+  }
+
+  return (
+    <>
+      <Head title="Welcome to Fitness Platform" />
+      <div className="min-h-screen bg-background">
+        {guestNav}
+        {pageContent}
       </div>
     </>
   );

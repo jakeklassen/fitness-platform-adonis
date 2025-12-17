@@ -1,12 +1,13 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Activity, Mail, Search, UserPlus } from 'lucide-react';
+import { Mail, Search, UserPlus } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
 interface User {
   id: number;
@@ -81,43 +82,11 @@ export default function FriendsCreate({ flash }: Props) {
     router.post(`/friends/${userId}`);
   };
 
-  const handleLogout = () => {
-    router.post('/logout');
-  };
-
   return (
-    <>
+    <AuthenticatedLayout>
       <Head title="Add Friends" />
 
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
-            <div className="mr-auto flex items-center gap-2">
-              <Activity className="h-6 w-6" />
-              <Link href="/" className="text-xl font-bold">
-                Fitness Platform
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                <Link href="/profile">Profile</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/friends">Friends</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/competitions">Competitions</Link>
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                Log Out
-              </Button>
-            </div>
-          </div>
-        </nav>
-
-        <div className="container mx-auto max-w-2xl px-4 py-8">
+      <div className="container mx-auto max-w-2xl px-4 py-8">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight">Add Friends</h1>
@@ -211,8 +180,7 @@ export default function FriendsCreate({ flash }: Props) {
               <Link href="/friends">← Back to Friends</Link>
             </Button>
           </div>
-        </div>
       </div>
-    </>
+    </AuthenticatedLayout>
   );
 }
