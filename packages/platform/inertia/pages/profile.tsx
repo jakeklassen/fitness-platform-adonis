@@ -1,6 +1,6 @@
 import ProfilesController from '#controllers/profiles_controller';
 import { InferPageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
   Activity,
   Battery,
@@ -26,13 +26,10 @@ import {
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
 export default function Profile(props: InferPageProps<ProfilesController, 'show'>) {
   const { user, accounts, flash, fitbitUserData, preferredProvider } = props;
-
-  const handleLogout = () => {
-    router.post('/logout');
-  };
 
   const handleLinkFitbit = () => {
     window.location.href = '/auth/fitbit';
@@ -49,38 +46,10 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
   const fitbitAccount = accounts.find((account) => account.provider === 'fitbit');
 
   return (
-    <>
+    <AuthenticatedLayout>
       <Head title="Profile" />
 
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
-            <div className="mr-auto flex items-center gap-2">
-              <Activity className="h-6 w-6" />
-              <Link href="/" className="text-xl font-bold">
-                Fitness Platform
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                <Link href="/profile">Profile</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/friends">Friends</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/competitions">Competitions</Link>
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                Log Out
-              </Button>
-            </div>
-          </div>
-        </nav>
-
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
           {/* Flash Messages */}
           {flash?.success && (
             <Alert className="mb-6 border-success/50 bg-success/10">
@@ -367,8 +336,7 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
               </CardContent>
             </Card>
           )}
-        </div>
       </div>
-    </>
+    </AuthenticatedLayout>
   );
 }

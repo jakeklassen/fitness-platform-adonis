@@ -1,10 +1,11 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Activity, Calendar, Plus, Target, User } from 'lucide-react';
+import { Calendar, Plus, Target, User } from 'lucide-react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
 interface Competition {
   id: number;
@@ -76,43 +77,11 @@ export default function CompetitionsIndex({ competitions, flash }: Props) {
     router.post(`/competitions/${competitionId}/decline`);
   };
 
-  const handleLogout = () => {
-    router.post('/logout');
-  };
-
   return (
-    <>
+    <AuthenticatedLayout>
       <Head title="Competitions" />
 
-      <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">
-            <div className="mr-auto flex items-center gap-2">
-              <Activity className="h-6 w-6" />
-              <Link href="/" className="text-xl font-bold">
-                Fitness Platform
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                <Link href="/profile">Profile</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/friends">Friends</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/competitions">Competitions</Link>
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                Log Out
-              </Button>
-            </div>
-          </div>
-        </nav>
-
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
@@ -255,8 +224,7 @@ export default function CompetitionsIndex({ competitions, flash }: Props) {
               </div>
             )}
           </div>
-        </div>
       </div>
-    </>
+    </AuthenticatedLayout>
   );
 }
