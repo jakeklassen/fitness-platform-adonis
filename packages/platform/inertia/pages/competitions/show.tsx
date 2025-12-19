@@ -1,7 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Award, Calendar, Check, Edit, Medal, Target, Trash2, Trophy, User, UserPlus } from 'lucide-react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
@@ -61,10 +60,6 @@ interface Props extends PageProps {
   membership: Membership | null;
   isMember: boolean;
   isCreator: boolean;
-  flash?: {
-    success?: string;
-    error?: string;
-  };
 }
 
 export default function CompetitionShow({
@@ -74,7 +69,6 @@ export default function CompetitionShow({
   membership,
   isMember,
   isCreator,
-  flash,
 }: Props) {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -140,18 +134,6 @@ export default function CompetitionShow({
       <Head title={competition.name} />
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
-          {/* Flash Messages */}
-          {flash?.success && (
-            <Alert className="mb-6 border-success/50 bg-success/10">
-              <AlertDescription>{flash.success}</AlertDescription>
-            </Alert>
-          )}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
-
           {/* Header */}
           <Card className="mb-6">
             <CardHeader>

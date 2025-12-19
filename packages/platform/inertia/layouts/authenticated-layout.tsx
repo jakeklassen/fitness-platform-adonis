@@ -1,19 +1,38 @@
-import { Link, router } from '@inertiajs/react';
+import type { SharedProps } from '@adonisjs/inertia/types';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Activity, Menu } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { Button } from '~/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '~/components/ui/sheet';
+import { Toaster } from '~/components/ui/sonner';
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
+  const { flash } = usePage<SharedProps>().props;
+
   const handleLogout = () => {
     router.post('/logout');
   };
 
+  // Automatically display flash messages as toasts
+  useEffect(() => {
+    if (flash?.success) {
+      toast.success(flash.success);
+    }
+    if (flash?.error) {
+      toast.error(flash.error);
+    }
+  }, [flash]);
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Toast Notifications */}
+      <Toaster />
+
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto flex h-16 max-w-7xl items-center px-4">

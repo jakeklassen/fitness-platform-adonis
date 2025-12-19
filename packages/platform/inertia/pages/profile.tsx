@@ -11,7 +11,6 @@ import {
   Unlink,
   Watch,
 } from 'lucide-react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
 export default function Profile(props: InferPageProps<ProfilesController, 'show'>) {
-  const { user, accounts, flash, fitbitUserData, preferredProvider } = props;
+  const { user, accounts, fitbitUserData, preferredProvider } = props;
 
   const handleLinkFitbit = () => {
     window.location.href = '/auth/fitbit';
@@ -50,18 +49,6 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
       <Head title="Profile" />
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
-          {/* Flash Messages */}
-          {flash?.success && (
-            <Alert className="mb-6 border-success/50 bg-success/10">
-              <AlertDescription>{flash.success}</AlertDescription>
-            </Alert>
-          )}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
-
           {/* Profile Information */}
           <Card className="mb-6">
             <CardHeader>
@@ -143,14 +130,14 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                             <Button
                               variant="outline"
                               onClick={() => handleSetPreferredProvider(account.provider)}
-                              className="cursor-pointer whitespace-nowrap"
+                              className="whitespace-nowrap"
                             >
                               Set Preferred
                             </Button>
                           )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button className="cursor-pointer bg-destructive/60 text-white hover:bg-destructive/80">
+                              <Button className="bg-destructive/60 text-white hover:bg-destructive/80">
                                 <Unlink className="mr-2 h-4 w-4" />
                                 Disconnect
                               </Button>
@@ -164,12 +151,12 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="cursor-pointer">
+                                <AlertDialogCancel>
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleUnlinkAccount(account.id)}
-                                  className="cursor-pointer bg-destructive/60 text-white hover:bg-destructive/80"
+                                  className="bg-destructive/60 text-white hover:bg-destructive/80"
                                 >
                                   <Unlink className="mr-2 h-4 w-4" />
                                   Disconnect
@@ -238,7 +225,7 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                     </div>
                     <Button
                       onClick={handleLinkFitbit}
-                      className="cursor-pointer bg-emerald-600/60 text-white hover:bg-emerald-600/80"
+                      className="bg-emerald-600/60 text-white hover:bg-emerald-600/80"
                     >
                       <LinkIcon className="mr-2 h-4 w-4" />
                       Connect

@@ -4,6 +4,7 @@ import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import GuestLayout from '~/layouts/guest-layout';
 
 export default function Register() {
   const { data, setData, post, processing, errors } = useForm({
@@ -18,7 +19,7 @@ export default function Register() {
   }
 
   return (
-    <>
+    <GuestLayout>
       <Head title="Register" />
 
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -102,6 +103,6 @@ export default function Register() {
           </div>
         </div>
       </div>
-    </>
+    </GuestLayout>
   );
 }

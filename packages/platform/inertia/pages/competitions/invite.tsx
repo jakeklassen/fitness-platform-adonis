@@ -2,7 +2,6 @@ import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
@@ -25,13 +24,9 @@ interface Competition {
 interface Props extends PageProps {
   competition: Competition;
   availableUsers: User[];
-  flash?: {
-    success?: string;
-    error?: string;
-  };
 }
 
-export default function CompetitionInvite({ competition, availableUsers, flash }: Props) {
+export default function CompetitionInvite({ competition, availableUsers }: Props) {
   const { data, setData, post, processing, errors } = useForm({
     userId: '',
   });
@@ -57,18 +52,6 @@ export default function CompetitionInvite({ competition, availableUsers, flash }
       <Head title={`Invite Users - ${competition.name}`} />
 
       <div className="container mx-auto max-w-3xl px-4 py-8">
-        {/* Flash Messages */}
-        {flash?.success && (
-          <Alert className="mb-6 border-success/50 bg-success/10">
-            <AlertDescription>{flash.success}</AlertDescription>
-          </Alert>
-        )}
-        {flash?.error && (
-          <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-            <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-          </Alert>
-        )}
-
         {/* Header */}
         <Card className="mb-6">
           <CardHeader>

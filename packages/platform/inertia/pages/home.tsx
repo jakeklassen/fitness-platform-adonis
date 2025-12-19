@@ -5,6 +5,7 @@ import { Activity, TrendingUp, Users, Zap } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
+import GuestLayout from '~/layouts/guest-layout';
 
 interface HomeProps extends PageProps {
   user?: User;
@@ -211,12 +212,12 @@ export default function Home() {
   }
 
   return (
-    <>
+    <GuestLayout>
       <Head title="Welcome to Fitness Platform" />
       <div className="min-h-screen bg-background">
         {guestNav}
         {pageContent}
       </div>
-    </>
+    </GuestLayout>
   );
 }
