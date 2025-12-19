@@ -1,7 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, Plus, Target, User } from 'lucide-react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
@@ -34,13 +33,9 @@ interface CompetitionItem {
 
 interface Props extends PageProps {
   competitions: CompetitionItem[];
-  flash?: {
-    success?: string;
-    error?: string;
-  };
 }
 
-export default function CompetitionsIndex({ competitions, flash }: Props) {
+export default function CompetitionsIndex({ competitions }: Props) {
   const acceptedCompetitions = competitions.filter(
     (item) => item.membership?.status === 'accepted' || item.isCreator
   );
@@ -97,18 +92,6 @@ export default function CompetitionsIndex({ competitions, flash }: Props) {
               </Link>
             </Button>
           </div>
-
-          {/* Flash Messages */}
-          {flash?.success && (
-            <Alert className="mb-6 border-success/50 bg-success/10">
-              <AlertDescription>{flash.success}</AlertDescription>
-            </Alert>
-          )}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
 
           {/* Pending Invitations */}
           {pendingInvitations.length > 0 && (

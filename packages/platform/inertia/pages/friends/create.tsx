@@ -15,14 +15,9 @@ interface User {
   email: string;
 }
 
-interface Props extends PageProps {
-  flash?: {
-    success?: string;
-    error?: string;
-  };
-}
+interface Props extends PageProps {}
 
-export default function FriendsCreate({ flash }: Props) {
+export default function FriendsCreate({}: Props) {
   const [email, setEmail] = useState('');
   const [searching, setSearching] = useState(false);
   const [foundUser, setFoundUser] = useState<User | null>(null);
@@ -94,18 +89,6 @@ export default function FriendsCreate({ flash }: Props) {
               Enter the email address of the person you'd like to add as a friend.
             </p>
           </div>
-
-          {/* Flash Messages */}
-          {flash?.success && (
-            <Alert className="mb-6 border-success/50 bg-success/10">
-              <AlertDescription>{flash.success}</AlertDescription>
-            </Alert>
-          )}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
 
           {/* Search Form */}
           <Card className="mb-6">

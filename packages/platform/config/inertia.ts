@@ -11,8 +11,9 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    user: (ctx) => ctx.auth.user,
-    flash: (ctx) => ctx.session.flashMessages.all() as { success?: string; error?: string },
+    user: (ctx) => ctx.auth?.user ?? null,
+    flash: (ctx) =>
+      (ctx.session?.flashMessages.all() as { success?: string; error?: string }) ?? {},
   },
 
   /**

@@ -6,15 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/com
 import { Checkbox } from '~/components/ui/checkbox';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Alert, AlertDescription } from '~/components/ui/alert';
+import GuestLayout from '~/layouts/guest-layout';
 
-interface Props extends PageProps {
-  flash?: {
-    error?: string;
-  };
-}
+interface Props extends PageProps {}
 
-export default function Login({ flash }: Props) {
+export default function Login({}: Props) {
   const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
@@ -27,7 +23,7 @@ export default function Login({ flash }: Props) {
   }
 
   return (
-    <>
+    <GuestLayout>
       <Head title="Login" />
 
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -37,13 +33,6 @@ export default function Login({ flash }: Props) {
             <Activity className="h-8 w-8" />
             <span className="text-2xl font-bold">Fitness Platform</span>
           </div>
-
-          {/* Flash Error Message */}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
 
           <Card>
             <CardHeader className="space-y-1">
@@ -114,6 +103,6 @@ export default function Login({ flash }: Props) {
           </div>
         </div>
       </div>
-    </>
+    </GuestLayout>
   );
 }

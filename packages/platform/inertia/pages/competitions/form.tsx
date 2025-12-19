@@ -1,7 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
@@ -31,13 +30,9 @@ interface Competition {
 interface Props extends PageProps {
   competition: Competition | null;
   isEdit: boolean;
-  flash?: {
-    success?: string;
-    error?: string;
-  };
 }
 
-export default function CompetitionForm({ competition, isEdit, flash }: Props) {
+export default function CompetitionForm({ competition, isEdit }: Props) {
   const formatDateForInput = (dateString: string | undefined) => {
     if (!dateString) return '';
     // Handle both string and Date object
@@ -85,13 +80,6 @@ export default function CompetitionForm({ competition, isEdit, flash }: Props) {
       <Head title={isEdit ? 'Edit Competition' : 'Create Competition'} />
 
       <div className="container mx-auto max-w-3xl px-4 py-8">
-        {/* Flash Messages */}
-        {flash?.error && (
-          <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-            <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-          </Alert>
-        )}
-
         {/* Form */}
         <Card>
           <CardHeader>

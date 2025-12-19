@@ -1,7 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Check, Clock, UserPlus, Users, X } from 'lucide-react';
-import { Alert, AlertDescription } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
@@ -29,13 +28,9 @@ interface Props extends PageProps {
   friends: Friend[];
   pendingRequests: Friendship[];
   sentRequests: Friendship[];
-  flash?: {
-    success?: string;
-    error?: string;
-  };
 }
 
-export default function FriendsIndex({ friends, pendingRequests, sentRequests, flash }: Props) {
+export default function FriendsIndex({ friends, pendingRequests, sentRequests }: Props) {
   const handleAccept = (friendshipId: number) => {
     router.post(`/friends/${friendshipId}/accept`);
   };
@@ -70,18 +65,6 @@ export default function FriendsIndex({ friends, pendingRequests, sentRequests, f
               </Link>
             </Button>
           </div>
-
-          {/* Flash Messages */}
-          {flash?.success && (
-            <Alert className="mb-6 border-success/50 bg-success/10">
-              <AlertDescription>{flash.success}</AlertDescription>
-            </Alert>
-          )}
-          {flash?.error && (
-            <Alert className="mb-6 bg-destructive/10 border-destructive/20">
-              <AlertDescription className="text-destructive">{flash.error}</AlertDescription>
-            </Alert>
-          )}
 
           {/* Pending Requests */}
           {pendingRequests.length > 0 && (
