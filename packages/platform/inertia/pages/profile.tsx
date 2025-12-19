@@ -4,11 +4,16 @@ import { Head, router } from '@inertiajs/react';
 import {
   Activity,
   Battery,
+  Cake,
+  Calendar,
   Check,
+  Footprints,
   HelpCircle,
   Link as LinkIcon,
+  Ruler,
   Star,
   Unlink,
+  User,
   Watch,
 } from 'lucide-react';
 import {
@@ -254,16 +259,22 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                   )}
 
                   {fitbitUserData.age && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-1">Age</div>
-                      <div className="text-lg font-semibold">{fitbitUserData.age}</div>
+                    <div className="p-4 bg-rose-50 dark:bg-rose-950/20 rounded-lg border border-rose-200 dark:border-rose-800">
+                      <div className="flex items-center gap-2 text-sm text-rose-700 dark:text-rose-300 mb-1">
+                        <Cake className="w-4 h-4" />
+                        Age
+                      </div>
+                      <div className="text-lg font-semibold text-rose-900 dark:text-rose-100">{fitbitUserData.age}</div>
                     </div>
                   )}
 
                   {fitbitUserData.gender && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-1">Gender</div>
-                      <div className="text-lg font-semibold">
+                    <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center gap-2 text-sm text-purple-700 dark:text-purple-300 mb-1">
+                        <User className="w-4 h-4" />
+                        Gender
+                      </div>
+                      <div className="text-lg font-semibold text-purple-900 dark:text-purple-100">
                         {fitbitUserData.gender.charAt(0) +
                           fitbitUserData.gender.slice(1).toLowerCase()}
                       </div>
@@ -271,25 +282,34 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
                   )}
 
                   {fitbitUserData.averageDailySteps !== undefined && (
-                    <div className="p-4 bg-linear-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                      <div className="text-sm text-muted-foreground mb-1">Average Daily Steps</div>
-                      <div className="text-2xl font-bold text-primary">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300 mb-1">
+                        <Footprints className="w-4 h-4" />
+                        Average Daily Steps
+                      </div>
+                      <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                         {fitbitUserData.averageDailySteps.toLocaleString()}
                       </div>
                     </div>
                   )}
 
                   {fitbitUserData.height && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-1">Height</div>
-                      <div className="text-lg font-semibold">{fitbitUserData.height} cm</div>
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300 mb-1">
+                        <Ruler className="w-4 h-4" />
+                        Height
+                      </div>
+                      <div className="text-lg font-semibold text-emerald-900 dark:text-emerald-100">{fitbitUserData.height} cm</div>
                     </div>
                   )}
 
                   {fitbitUserData.memberSinceFormatted && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-1">Member Since</div>
-                      <div className="text-lg font-semibold">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <div className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 mb-1">
+                        <Calendar className="w-4 h-4" />
+                        Member Since
+                      </div>
+                      <div className="text-lg font-semibold text-amber-900 dark:text-amber-100">
                         {fitbitUserData.memberSinceFormatted}
                       </div>
                     </div>
