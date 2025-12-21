@@ -21,13 +21,10 @@ export default class extends BaseSchema {
         .inTable('users')
         .onDelete('CASCADE');
       table
-        .enum('status', ['invited', 'accepted', 'declined'], {
-          useNative: true,
-          enumName: 'competition_member_status',
-          existingType: false,
-        })
+        .string('status')
         .notNullable()
-        .defaultTo('invited');
+        .defaultTo('invited')
+        .checkIn(['invited', 'accepted', 'declined']);
       table
         .integer('invited_by')
         .unsigned()

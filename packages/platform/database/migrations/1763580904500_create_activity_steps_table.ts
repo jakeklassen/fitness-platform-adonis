@@ -16,7 +16,7 @@ export default class extends BaseSchema {
       table.date('date').notNullable();
       table.time('time').nullable(); // NULL for daily aggregates, populated for intraday
       table.integer('steps').notNullable();
-      table.enum('granularity', ['daily', 'intraday']).notNullable();
+      table.string('granularity').notNullable().defaultTo('daily').checkIn(['daily', 'intraday']);
       table.timestamp('synced_at').notNullable();
 
       table.timestamp('created_at').notNullable();

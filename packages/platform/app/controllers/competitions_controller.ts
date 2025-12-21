@@ -261,7 +261,7 @@ export default class CompetitionsController {
     // Get user's accepted friends (both directions)
     const acceptedFriendships = await Friendship.query()
       .where((query) => {
-        query.where('user_id', user.id).orWhere('friend_id', user.id)
+        query.where('user_id', user.id).orWhere('friend_id', user.id);
       })
       .where('status', 'accepted')
       .preload('user')
@@ -269,11 +269,11 @@ export default class CompetitionsController {
 
     // Extract friend IDs
     const friendIds = acceptedFriendships.map((friendship) => {
-      return friendship.userId === user.id ? friendship.friendId : friendship.userId
+      return friendship.userId === user.id ? friendship.friendId : friendship.userId;
     });
 
     // Get friends who are not already members
-    const availableFriendIds = friendIds.filter(id => !memberIds.includes(id));
+    const availableFriendIds = friendIds.filter((id) => !memberIds.includes(id));
 
     const availableUsers = await User.query()
       .whereIn('id', availableFriendIds)

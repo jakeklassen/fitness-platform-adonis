@@ -21,7 +21,11 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE');
-      table.enum('status', ['pending', 'accepted', 'declined']).defaultTo('pending').notNullable();
+      table
+        .string('status')
+        .notNullable()
+        .defaultTo('pending')
+        .checkIn(['pending', 'accepted', 'declined']);
 
       table.timestamp('created_at');
       table.timestamp('updated_at');
