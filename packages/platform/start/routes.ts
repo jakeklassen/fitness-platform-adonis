@@ -12,7 +12,7 @@ import { middleware } from '#start/kernel';
 
 const AuthController = () => import('#controllers/auth_controller');
 const ProfilesController = () => import('#controllers/profiles_controller');
-const FitbitsController = () => import('#controllers/fitbits_controller');
+const FitbitController = () => import('#controllers/fitbit_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
 
@@ -42,8 +42,8 @@ router
       .as('profile.set-preferred-provider');
 
     // Fitbit OAuth
-    router.get('/auth/fitbit', [FitbitsController, 'redirect']).as('fitbit.redirect');
-    router.get('/auth/fitbit/callback', [FitbitsController, 'callback']).as('fitbit.callback');
+    router.get('/auth/fitbit', [FitbitController, 'redirect']).as('fitbit.redirect');
+    router.get('/auth/fitbit/callback', [FitbitController, 'callback']).as('fitbit.callback');
 
     // Friends
     router.get('/friends', [FriendsController, 'index']).as('friends.index');
