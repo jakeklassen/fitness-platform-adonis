@@ -9,7 +9,7 @@ export const createCompetitionValidator = vine.compile(
     goalType: vine.enum(['total_steps', 'goal_based']),
     goalValue: vine.number().positive().optional(),
     visibility: vine.enum(['private', 'public']).optional(),
-  })
+  }),
 );
 
 export const updateCompetitionValidator = vine.compile(
@@ -21,5 +21,5 @@ export const updateCompetitionValidator = vine.compile(
     goalType: vine.enum(['total_steps', 'goal_based']).optional(),
     goalValue: vine.number().positive().optional().nullable(),
     status: vine.enum(['draft', 'active', 'ended']).optional(),
-  })
+  }),
 );

@@ -11,13 +11,10 @@ export default class extends BaseSchema {
       table.date('start_date').notNullable();
       table.date('end_date').notNullable();
       table
-        .enum('goal_type', ['total_steps', 'goal_based'], {
-          useNative: true,
-          enumName: 'competition_goal_type',
-          existingType: false,
-        })
+        .string('goal_type')
         .notNullable()
-        .defaultTo('total_steps');
+        .defaultTo('total_steps')
+        .checkIn(['total_steps', 'goal_based']);
       table.integer('goal_value').unsigned().nullable(); // For goal-based competitions
       table.integer('team_id').unsigned().nullable().comment('If set, this is a team competition');
       // .references('id')
@@ -30,22 +27,8 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE');
-      table
-        .enum('visibility', ['private', 'public'], {
-          useNative: true,
-          enumName: 'visibility',
-          existingType: false,
-        })
-        .notNullable()
-        .defaultTo('private');
-      table
-        .enum('status', ['draft', 'active', 'ended'], {
-          useNative: true,
-          enumName: 'competition_status',
-          existingType: false,
-        })
-        .notNullable()
-        .defaultTo('draft');
+      table.string('visibility').notNullable().defaultTo('private').checkIn(['private', 'public']);
+      table.string('status').notNullable().defaultTo('draft').checkIn(['draft', 'active', 'ended']);
 
       table.timestamp('created_at').notNullable();
       table.timestamp('updated_at').notNullable();
