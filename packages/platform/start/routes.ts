@@ -56,17 +56,29 @@ router
 
     // Competitions
     router.get('/competitions', [CompetitionsController, 'index']).as('competitions.index');
-    router.get('/competitions/create', [CompetitionsController, 'create']).as('competitions.create');
+    router
+      .get('/competitions/create', [CompetitionsController, 'create'])
+      .as('competitions.create');
     router.post('/competitions', [CompetitionsController, 'store']).as('competitions.store');
     router.get('/competitions/:id', [CompetitionsController, 'show']).as('competitions.show');
     router.get('/competitions/:id/edit', [CompetitionsController, 'edit']).as('competitions.edit');
     router.put('/competitions/:id', [CompetitionsController, 'update']).as('competitions.update');
-    router.delete('/competitions/:id', [CompetitionsController, 'destroy']).as('competitions.destroy');
+    router
+      .delete('/competitions/:id', [CompetitionsController, 'destroy'])
+      .as('competitions.destroy');
 
     // Competition invitations
-    router.get('/competitions/:id/invite', [CompetitionsController, 'inviteForm']).as('competitions.invite.form');
-    router.post('/competitions/:id/invite', [CompetitionsController, 'invite']).as('competitions.invite');
-    router.post('/competitions/:id/accept', [CompetitionsController, 'accept']).as('competitions.accept');
-    router.post('/competitions/:id/decline', [CompetitionsController, 'decline']).as('competitions.decline');
+    router
+      .get('/competitions/:id/invite', [CompetitionsController, 'inviteForm'])
+      .as('competitions.invite.form');
+    router
+      .post('/competitions/:id/invite', [CompetitionsController, 'invite'])
+      .as('competitions.invite');
+    router
+      .post('/competitions/:id/accept', [CompetitionsController, 'accept'])
+      .as('competitions.accept');
+    router
+      .post('/competitions/:id/decline', [CompetitionsController, 'decline'])
+      .as('competitions.decline');
   })
   .use(middleware.auth());

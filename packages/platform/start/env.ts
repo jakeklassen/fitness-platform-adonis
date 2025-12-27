@@ -56,4 +56,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   LENS_ENABLE_REQUEST_WATCHER: Env.schema.boolean.optional(),
   LENS_ENABLE_CACHE_WATCHER: Env.schema.boolean.optional(),
   LENS_ENABLE_EXCEPTION_WATCHER: Env.schema.boolean.optional(),
+
+  APP_NAME: Env.schema.string(),
+  APP_VERSION: Env.schema.string(),
+  APP_ENV: Env.schema.enum(['development', 'staging', 'production'] as const),
 });
