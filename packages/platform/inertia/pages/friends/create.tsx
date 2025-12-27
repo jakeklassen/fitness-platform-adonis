@@ -82,87 +82,87 @@ export default function FriendsCreate({}: Props) {
       <Head title="Add Friends" />
 
       <div className="container mx-auto max-w-2xl px-4 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">Add Friends</h1>
-            <p className="text-muted-foreground mt-1">
-              Enter the email address of the person you'd like to add as a friend.
-            </p>
-          </div>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Add Friends</h1>
+          <p className="text-muted-foreground mt-1">
+            Enter the email address of the person you'd like to add as a friend.
+          </p>
+        </div>
 
-          {/* Search Form */}
+        {/* Search Form */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Search by Email</CardTitle>
+            <CardDescription>Find a user by their email address</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <Button type="submit" disabled={searching} className="w-full">
+                <Search className="mr-2 h-4 w-4" />
+                {searching ? 'Searching...' : 'Search'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Search Message */}
+        {searchMessage && (
+          <Alert className="mb-6 border-warning/50 bg-warning/10">
+            <AlertDescription>{searchMessage}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Found User */}
+        {foundUser && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Search by Email</CardTitle>
-              <CardDescription>Find a user by their email address</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSearch} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="user@example.com"
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle>{foundUser.fullName || foundUser.email}</CardTitle>
+                  {foundUser.fullName && (
+                    <CardDescription className="mt-1">{foundUser.email}</CardDescription>
+                  )}
                 </div>
-                <Button type="submit" disabled={searching} className="w-full">
-                  <Search className="mr-2 h-4 w-4" />
-                  {searching ? 'Searching...' : 'Search'}
+                <Button onClick={() => handleSendRequest(foundUser.id)}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Send Request
                 </Button>
-              </form>
-            </CardContent>
+              </div>
+            </CardHeader>
           </Card>
+        )}
 
-          {/* Search Message */}
-          {searchMessage && (
-            <Alert className="mb-6 border-warning/50 bg-warning/10">
-              <AlertDescription>{searchMessage}</AlertDescription>
-            </Alert>
-          )}
+        {/* Privacy Notice */}
+        <Alert className="mb-6 border-info/50 bg-info/10">
+          <AlertDescription>
+            <strong className="font-semibold">Privacy Notice:</strong> For privacy reasons, you can
+            only add friends by their email address. Make sure you have the correct email address of
+            the person you want to connect with.
+          </AlertDescription>
+        </Alert>
 
-          {/* Found User */}
-          {foundUser && (
-            <Card className="mb-6">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle>{foundUser.fullName || foundUser.email}</CardTitle>
-                    {foundUser.fullName && (
-                      <CardDescription className="mt-1">{foundUser.email}</CardDescription>
-                    )}
-                  </div>
-                  <Button onClick={() => handleSendRequest(foundUser.id)}>
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Send Request
-                  </Button>
-                </div>
-              </CardHeader>
-            </Card>
-          )}
-
-          {/* Privacy Notice */}
-          <Alert className="mb-6 border-info/50 bg-info/10">
-            <AlertDescription>
-              <strong className="font-semibold">Privacy Notice:</strong> For privacy reasons, you
-              can only add friends by their email address. Make sure you have the correct email
-              address of the person you want to connect with.
-            </AlertDescription>
-          </Alert>
-
-          {/* Back Link */}
-          <div className="mt-8">
-            <Button variant="ghost" asChild>
-              <Link href="/friends">← Back to Friends</Link>
-            </Button>
-          </div>
+        {/* Back Link */}
+        <div className="mt-8">
+          <Button variant="ghost" asChild>
+            <Link href="/friends">← Back to Friends</Link>
+          </Button>
+        </div>
       </div>
     </AuthenticatedLayout>
   );

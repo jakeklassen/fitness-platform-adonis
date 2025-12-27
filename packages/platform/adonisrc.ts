@@ -62,7 +62,7 @@ export default defineConfig({
       file: () => import('adonisjs-scheduler/scheduler_provider'),
       environment: ['console'],
     },
-    // () => import('@lensjs/adonis/lens_provider'),
+    () => import('@adonisjs/otel/otel_provider'),
   ],
 
   /*

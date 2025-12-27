@@ -1,6 +1,17 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Award, Calendar, Check, Edit, Medal, Target, Trash2, Trophy, User, UserPlus } from 'lucide-react';
+import {
+  Award,
+  Calendar,
+  Check,
+  Edit,
+  Medal,
+  Target,
+  Trash2,
+  Trophy,
+  User,
+  UserPlus,
+} from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
@@ -81,7 +92,7 @@ export default function CompetitionShow({
   };
 
   const getStatusVariant = (
-    status: string
+    status: string,
   ): 'default' | 'secondary' | 'outline' | 'destructive' => {
     const variants = {
       draft: 'secondary' as const,
@@ -134,187 +145,179 @@ export default function CompetitionShow({
       <Head title={competition.name} />
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
-          {/* Header */}
-          <Card className="mb-6">
-            <CardHeader>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <CardTitle className="text-3xl">{competition.name}</CardTitle>
-                    <Badge variant={getStatusVariant(competition.status)}>
-                      {competition.status}
-                    </Badge>
-                  </div>
-                  {competition.description && (
-                    <CardDescription className="text-base mb-4">
-                      {competition.description}
-                    </CardDescription>
-                  )}
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {formatDate(competition.startDate)} - {formatDate(competition.endDate)}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Target className="w-4 h-4" />
-                      {competition.goalType === 'total_steps'
-                        ? 'Total Steps Competition'
-                        : `Goal: ${competition.goalValue?.toLocaleString()} steps`}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <User className="w-4 h-4" />
-                      {competition.creator.fullName || competition.creator.email}
-                    </span>
-                  </div>
+        {/* Header */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <CardTitle className="text-3xl">{competition.name}</CardTitle>
+                  <Badge variant={getStatusVariant(competition.status)}>{competition.status}</Badge>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-2">
-                  {membership?.status === 'invited' && (
-                    <Button onClick={handleAcceptInvitation}>Accept Invitation</Button>
-                  )}
-                  {isMember && (
-                    <Button variant="outline" asChild>
-                      <Link href={`/competitions/${competition.id}/invite`}>
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Invite Users
-                      </Link>
-                    </Button>
-                  )}
-                  {isCreator && (
-                    <>
-                      <Button variant="outline" asChild>
-                        <Link href={`/competitions/${competition.id}/edit`}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </Link>
-                      </Button>
-                      <Button variant="destructive" onClick={handleDelete}>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Cancel
-                      </Button>
-                    </>
-                  )}
+                {competition.description && (
+                  <CardDescription className="text-base mb-4">
+                    {competition.description}
+                  </CardDescription>
+                )}
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    {formatDate(competition.startDate)} - {formatDate(competition.endDate)}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Target className="w-4 h-4" />
+                    {competition.goalType === 'total_steps'
+                      ? 'Total Steps Competition'
+                      : `Goal: ${competition.goalValue?.toLocaleString()} steps`}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <User className="w-4 h-4" />
+                    {competition.creator.fullName || competition.creator.email}
+                  </span>
                 </div>
               </div>
-            </CardHeader>
-          </Card>
 
-          {/* Stats Section */}
-          {stats && (
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardDescription>Total Participants</CardDescription>
-                  <CardTitle className="text-3xl">{stats.totalParticipants}</CardTitle>
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardDescription>Active Participants</CardDescription>
-                  <CardTitle className="text-3xl text-success">
-                    {stats.activeParticipants}
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardDescription>Average Steps</CardDescription>
-                  <CardTitle className="text-3xl text-primary">
-                    {stats.averageSteps.toLocaleString()}
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </div>
-          )}
-
-          {/* Leaderboard */}
-          {leaderboard && leaderboard.length > 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Leaderboard</CardTitle>
-                <CardDescription>Current standings for this competition</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-24">Rank</TableHead>
-                      <TableHead>Participant</TableHead>
-                      <TableHead className="text-right">Total Steps</TableHead>
-                      {competition.goalType === 'goal_based' && (
-                        <TableHead className="text-center">Goal Status</TableHead>
-                      )}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {leaderboard.map((entry) => (
-                      <TableRow key={entry.userId}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {getRankIcon(entry.rank)}
-                            <span className={cn('font-semibold', getRankTextSize(entry.rank))}>
-                              #{entry.rank}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className={getNameTextSize(entry.rank)}>
-                              {entry.user.fullName || entry.user.email}
-                            </div>
-                            {entry.user.fullName && (
-                              <div className="text-sm text-muted-foreground">
-                                {entry.user.email}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className={cn('text-right', getStepsTextSize(entry.rank))}>
-                          {entry.totalSteps.toLocaleString()}
-                        </TableCell>
-                        {competition.goalType === 'goal_based' && (
-                          <TableCell className="text-center">
-                            {entry.goalReached ? (
-                              <Badge variant="default" className="bg-success text-success-foreground">
-                                <Check className="mr-1 h-3 w-3" />
-                                Goal Reached
-                              </Badge>
-                            ) : (
-                              <Badge variant="secondary">In Progress</Badge>
-                            )}
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="p-12 text-center">
-              <CardContent>
-                <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground mb-4">
-                  No participants yet or you don't have access to view the leaderboard.
-                </p>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-2">
+                {membership?.status === 'invited' && (
+                  <Button onClick={handleAcceptInvitation}>Accept Invitation</Button>
+                )}
                 {isMember && (
-                  <Button asChild>
+                  <Button variant="outline" asChild>
                     <Link href={`/competitions/${competition.id}/invite`}>
-                      Invite Participants
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Invite Users
                     </Link>
                   </Button>
                 )}
-              </CardContent>
-            </Card>
-          )}
+                {isCreator && (
+                  <>
+                    <Button variant="outline" asChild>
+                      <Link href={`/competitions/${competition.id}/edit`}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                      </Link>
+                    </Button>
+                    <Button variant="destructive" onClick={handleDelete}>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
 
-          {/* Back Link */}
-          <div className="mt-8">
-            <Button variant="ghost" asChild>
-              <Link href="/competitions">← Back to Competitions</Link>
-            </Button>
+        {/* Stats Section */}
+        {stats && (
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardDescription>Total Participants</CardDescription>
+                <CardTitle className="text-3xl">{stats.totalParticipants}</CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardDescription>Active Participants</CardDescription>
+                <CardTitle className="text-3xl text-success">{stats.activeParticipants}</CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardDescription>Average Steps</CardDescription>
+                <CardTitle className="text-3xl text-primary">
+                  {stats.averageSteps.toLocaleString()}
+                </CardTitle>
+              </CardHeader>
+            </Card>
           </div>
+        )}
+
+        {/* Leaderboard */}
+        {leaderboard && leaderboard.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Leaderboard</CardTitle>
+              <CardDescription>Current standings for this competition</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-24">Rank</TableHead>
+                    <TableHead>Participant</TableHead>
+                    <TableHead className="text-right">Total Steps</TableHead>
+                    {competition.goalType === 'goal_based' && (
+                      <TableHead className="text-center">Goal Status</TableHead>
+                    )}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {leaderboard.map((entry) => (
+                    <TableRow key={entry.userId}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {getRankIcon(entry.rank)}
+                          <span className={cn('font-semibold', getRankTextSize(entry.rank))}>
+                            #{entry.rank}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className={getNameTextSize(entry.rank)}>
+                            {entry.user.fullName || entry.user.email}
+                          </div>
+                          {entry.user.fullName && (
+                            <div className="text-sm text-muted-foreground">{entry.user.email}</div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className={cn('text-right', getStepsTextSize(entry.rank))}>
+                        {entry.totalSteps.toLocaleString()}
+                      </TableCell>
+                      {competition.goalType === 'goal_based' && (
+                        <TableCell className="text-center">
+                          {entry.goalReached ? (
+                            <Badge variant="default" className="bg-success text-success-foreground">
+                              <Check className="mr-1 h-3 w-3" />
+                              Goal Reached
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary">In Progress</Badge>
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="p-12 text-center">
+            <CardContent>
+              <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground mb-4">
+                No participants yet or you don't have access to view the leaderboard.
+              </p>
+              {isMember && (
+                <Button asChild>
+                  <Link href={`/competitions/${competition.id}/invite`}>Invite Participants</Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Back Link */}
+        <div className="mt-8">
+          <Button variant="ghost" asChild>
+            <Link href="/competitions">← Back to Competitions</Link>
+          </Button>
+        </div>
       </div>
     </AuthenticatedLayout>
   );
