@@ -22,7 +22,7 @@ For example, GET https://api.fitbit.com/1/user/-/activities/steps/date/2025-11-2
 
 ## Open Telemetry
 
-We uset he [Adonis native otel](https://docs.adonisjs.com/guides/digging-deeper/open-telemetry) support.
+We use [Adonis' native otel](https://docs.adonisjs.com/guides/digging-deeper/open-telemetry) support.
 
 During development we use Jaeger UI to show the trace reporting.
 
