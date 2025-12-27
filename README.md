@@ -30,7 +30,7 @@ The Jaeger UI can be accessed from http://localhost:16686
 
 ### Dark Mode Issue
 
-There is currently an annoying [bug](https://github.com/jaegertracing/jaeger-ui/issues/3203) with Jaeger UI mixnig light and dark mode. If you open the dev tools and enter:
+There is currently an annoying [bug](https://github.com/jaegertracing/jaeger-ui/issues/3203) with Jaeger UI mixing light and dark mode. If you open the dev tools and enter:
 
 ```js
 localStorage.setItem("jaeger-ui-theme", "light");
