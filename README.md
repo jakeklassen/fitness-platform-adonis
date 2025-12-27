@@ -19,3 +19,22 @@ FitBit stat syncing could be done with subscriptions on FitBit so we can be told
 Locally we can poll every 10 minutes from the https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date/ docs. We can leverage a job for this using https://packages.adonisjs.com/packages/adonisjs-scheduler.
 
 For example, GET https://api.fitbit.com/1/user/-/activities/steps/date/2025-11-20/1d.json would get the users daily steps.
+
+## Open Telemetry
+
+We uset he [Adonis native otel](https://docs.adonisjs.com/guides/digging-deeper/open-telemetry) support.
+
+During development we use Jaeger UI to show the trace reporting.
+
+The Jaeger UI can be accessed from http://localhost:16686
+
+### Dark Mode Issue
+
+There is currently an annoying [bug](https://github.com/jaegertracing/jaeger-ui/issues/3203) with Jaeger UI mixnig light and dark mode. If you open the dev tools and enter:
+
+```js
+localStorage.setItem("jaeger-ui-theme", "light");
+location.reload();
+```
+
+This will get rid of it.
