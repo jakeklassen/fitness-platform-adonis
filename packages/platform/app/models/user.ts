@@ -1,13 +1,14 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import CompetitionMember from '#models/competition_member';
 import DailyStep from '#models/daily_step';
 import Friendship from '#models/friendship';
+import Provider from '#models/provider';
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid';
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session';
 import { compose } from '@adonisjs/core/helpers';
 import hash from '@adonisjs/core/services/hash';
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm';
-import type { HasMany } from '@adonisjs/lucid/types/relations';
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm';
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
@@ -31,7 +32,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare password: string;
 
   @column()
-  declare preferredStepsProvider: string | null;
+  declare preferredStepsProviderId: number | null;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;
@@ -39,8 +40,13 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null;
 
-  @hasMany(() => Account)
-  declare accounts: HasMany<typeof Account>;
+  @hasMany(() => ProviderAccount)
+  declare accounts: HasMany<typeof ProviderAccount>;
+
+  @belongsTo(() => Provider, {
+    foreignKey: 'preferredStepsProviderId',
+  })
+  declare preferredStepsProvider: BelongsTo<typeof Provider>;
 
   @hasMany(() => DailyStep)
   declare dailySteps: HasMany<typeof DailyStep>;

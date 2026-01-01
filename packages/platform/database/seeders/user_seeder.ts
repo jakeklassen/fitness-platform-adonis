@@ -1,5 +1,5 @@
 import Competition from '#models/competition';
-import CompetitionMember from '#models/competition_member';
+import CompetitionMember, { type MemberStatus } from '#models/competition_member';
 import DailyStep from '#models/daily_step';
 import User from '#models/user';
 import { BaseSeeder } from '@adonisjs/lucid/seeders';
@@ -109,7 +109,12 @@ export default class extends BaseSeeder {
     console.log('Created 3 test competitions');
 
     // Add members to competitions
-    const memberData = [
+    const memberData: Array<{
+      competitionId: number;
+      userId: number;
+      status: MemberStatus;
+      invitedBy: number | null;
+    }> = [
       // Competition 1 - Monthly Step Challenge (4 members)
       { competitionId: competition1.id, userId: users[0].id, status: 'accepted', invitedBy: null }, // Creator
       {

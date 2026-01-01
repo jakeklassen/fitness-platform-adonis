@@ -1,3 +1,4 @@
+import Provider from '#models/provider';
 import type { HttpContext } from '@adonisjs/core/http';
 import { DateTime } from 'luxon';
 
@@ -41,18 +42,21 @@ export default class FitbitController {
     const user = auth.getUserOrFail();
     const fitbitUser = await fitbit.user();
 
+    // Get the Fitbit provider
+    const fitbitProvider = await Provider.findByOrFail('name', 'fitbit');
+
     /**
-     * Check if this Fitbit account is already linked to another user
+     * Check if this Fitbit account is already linked to this user
      */
     const existingAccount = await user
       .related('accounts')
       .query()
-      .where('provider', 'fitbit')
+      .where('provider_id', fitbitProvider.id)
       .first();
 
     if (existingAccount) {
       // Update the existing account
-      existingAccount.providerId = fitbitUser.id;
+      existingAccount.providerUserId = fitbitUser.id;
       existingAccount.accessToken = fitbitUser.token.token;
       existingAccount.refreshToken = fitbitUser.token.refreshToken || null;
       existingAccount.expiresAt = fitbitUser.token.expiresAt
@@ -62,8 +66,8 @@ export default class FitbitController {
     } else {
       // Create a new account link
       await user.related('accounts').create({
-        provider: 'fitbit',
-        providerId: fitbitUser.id,
+        providerId: fitbitProvider.id,
+        providerUserId: fitbitUser.id,
         accessToken: fitbitUser.token.token,
         refreshToken: fitbitUser.token.refreshToken || null,
         expiresAt: fitbitUser.token.expiresAt

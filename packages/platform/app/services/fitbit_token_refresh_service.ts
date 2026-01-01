@@ -1,4 +1,4 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import env from '#start/env';
 import { DateTime } from 'luxon';
 
@@ -28,7 +28,7 @@ export class FitbitTokenRefreshService {
   /**
    * Refresh the access token using the refresh token
    */
-  async refreshToken(account: Account): Promise<string> {
+  async refreshToken(account: ProviderAccount): Promise<string> {
     if (!account.refreshToken) {
       throw new Error('No refresh token available');
     }
@@ -79,7 +79,7 @@ export class FitbitTokenRefreshService {
   /**
    * Get a valid access token, refreshing if necessary
    */
-  async getValidAccessToken(account: Account): Promise<string | null> {
+  async getValidAccessToken(account: ProviderAccount): Promise<string | null> {
     if (!account.accessToken) {
       return null;
     }

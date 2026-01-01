@@ -1,4 +1,4 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import { FitbitTokenRefreshService } from '#services/fitbit_token_refresh_service';
 import { AllyService } from '@adonisjs/ally/types';
 
@@ -18,7 +18,7 @@ export class FitbitService {
    * Get Fitbit user data with automatic token refresh
    * Returns null if account is not linked or token refresh fails
    */
-  async getUserData(account: Account | undefined): Promise<any | null> {
+  async getUserData(account: ProviderAccount | undefined): Promise<any | null> {
     if (!account || !this.ally) {
       return null;
     }
@@ -51,7 +51,7 @@ export class FitbitService {
    * @returns Array of daily activity data
    */
   async getActivityTimeSeries(
-    account: Account,
+    account: ProviderAccount,
     resource: string,
     startDate: string,
     endDate: string,
@@ -82,7 +82,7 @@ export class FitbitService {
         throw new Error(`Fitbit API error (${response.status}): ${errorText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as Record<string, ActivityTimeSeriesData[]>;
 
       // Response format: { "activities-{resource}": [{ dateTime: "YYYY-MM-DD", value: "123" }] }
       const resourceKey = `activities-${resource}`;
@@ -98,7 +98,7 @@ export class FitbitService {
    * Convenience method for getting steps specifically
    */
   async getStepsTimeSeries(
-    account: Account,
+    account: ProviderAccount,
     startDate: string,
     endDate: string,
   ): Promise<ActivityTimeSeriesData[]> {
@@ -108,7 +108,7 @@ export class FitbitService {
   /**
    * Get user's connected Fitbit devices
    */
-  async getDevices(account: Account | null) {
+  async getDevices(account: ProviderAccount | null): Promise<any[] | null> {
     if (!account) {
       return null;
     }
@@ -132,7 +132,7 @@ export class FitbitService {
         return null;
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as any[];
       return data;
     } catch (error) {
       console.error('Error fetching Fitbit devices:', error);
