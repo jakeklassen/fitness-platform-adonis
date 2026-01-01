@@ -1,6 +1,6 @@
-import ProviderAccount from '#models/provider_account';
-import Provider from '#models/provider';
 import ActivityStep from '#models/activity_step';
+import Provider from '#models/provider';
+import ProviderAccount from '#models/provider_account';
 import { FitbitTokenRefreshService } from '#services/fitbit_token_refresh_service';
 import { StepsAggregationService } from '#services/steps_aggregation_service';
 import { BaseCommand } from '@adonisjs/core/ace';
@@ -36,10 +36,7 @@ export default class SyncFitbitSteps extends BaseCommand {
     this.logger.info('[FitBit Sync] Starting steps sync...');
 
     try {
-      // Get the Fitbit provider
       const fitbitProvider = await Provider.findByOrFail('name', 'fitbit');
-
-      // Get all FitBit accounts
       const fitbitAccounts = await ProviderAccount.query()
         .where('provider_id', fitbitProvider.id)
         .preload('user');
@@ -49,7 +46,6 @@ export default class SyncFitbitSteps extends BaseCommand {
       const tokenRefreshService = new FitbitTokenRefreshService();
       const aggregationService = new StepsAggregationService();
 
-      // Get today's date for real-time syncing
       const today = DateTime.now().toISODate();
 
       let successCount = 0;
@@ -62,7 +58,6 @@ export default class SyncFitbitSteps extends BaseCommand {
             `[FitBit Sync] Syncing account ${account.id} for user ${account.user.email}`,
           );
 
-          // Get valid access token (auto-refreshes if needed)
           const accessToken = await tokenRefreshService.getValidAccessToken(account);
 
           if (!accessToken) {
@@ -71,7 +66,7 @@ export default class SyncFitbitSteps extends BaseCommand {
             continue;
           }
 
-          // Fetch steps data from FitBit API
+          // Fetch steps data from FitBit
           const response = await fetch(
             `https://api.fitbit.com/1/user/-/activities/steps/date/${today}/1d.json`,
             {
@@ -91,7 +86,7 @@ export default class SyncFitbitSteps extends BaseCommand {
 
           const rawData = await response.json();
 
-          // Validate the response
+          // Validate the response, the sync with the activity_steps table
           const data = await fitbitStepsResponseSchema.validate(rawData);
           const stepsData = data['activities-steps'][0];
 
@@ -101,7 +96,6 @@ export default class SyncFitbitSteps extends BaseCommand {
             continue;
           }
 
-          // Store raw data in activity_steps table
           await ActivityStep.updateOrCreate(
             {
               accountId: account.id,
