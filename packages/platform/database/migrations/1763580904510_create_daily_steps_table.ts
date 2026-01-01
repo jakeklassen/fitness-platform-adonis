@@ -20,7 +20,7 @@ export default class extends BaseSchema {
         .unsigned()
         .nullable()
         .references('id')
-        .inTable('accounts')
+        .inTable('provider_accounts')
         .onDelete('SET NULL');
 
       table.timestamp('created_at').notNullable();

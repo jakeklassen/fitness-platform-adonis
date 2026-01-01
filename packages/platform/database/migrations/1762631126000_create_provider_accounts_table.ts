@@ -1,7 +1,7 @@
 import { BaseSchema } from '@adonisjs/lucid/schema';
 
 export default class extends BaseSchema {
-  protected tableName = 'accounts';
+  protected tableName = 'provider_accounts';
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -13,8 +13,14 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE');
-      table.string('provider').notNullable();
-      table.string('provider_id').notNullable();
+      table
+        .integer('provider_id')
+        .unsigned()
+        .notNullable()
+        .references('id')
+        .inTable('providers')
+        .onDelete('CASCADE');
+      table.string('provider_user_id').notNullable();
       table.text('access_token').nullable();
       table.text('refresh_token').nullable();
       table.timestamp('expires_at').nullable();
@@ -23,9 +29,9 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable();
 
       // Ensure a user can only link each provider once
-      table.unique(['user_id', 'provider']);
+      table.unique(['user_id', 'provider_id']);
       // Ensure provider user IDs are unique per provider
-      table.unique(['provider', 'provider_id']);
+      table.unique(['provider_id', 'provider_user_id']);
     });
   }
 

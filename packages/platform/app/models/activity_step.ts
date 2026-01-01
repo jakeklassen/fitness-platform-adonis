@@ -1,4 +1,4 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
 import type { BelongsTo } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
@@ -31,6 +31,6 @@ export default class ActivityStep extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime;
 
-  @belongsTo(() => Account)
-  declare account: BelongsTo<typeof Account>;
+  @belongsTo(() => ProviderAccount)
+  declare account: BelongsTo<typeof ProviderAccount>;
 }

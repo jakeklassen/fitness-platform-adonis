@@ -5,13 +5,19 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.string('preferred_steps_provider').nullable();
+      table
+        .integer('preferred_steps_provider_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('providers')
+        .onDelete('SET NULL');
     });
   }
 
   async down() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.dropColumn('preferred_steps_provider');
+      table.dropColumn('preferred_steps_provider_id');
     });
   }
 }

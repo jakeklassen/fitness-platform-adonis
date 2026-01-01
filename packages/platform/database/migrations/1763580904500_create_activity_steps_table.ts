@@ -11,7 +11,7 @@ export default class extends BaseSchema {
         .unsigned()
         .notNullable()
         .references('id')
-        .inTable('accounts')
+        .inTable('provider_accounts')
         .onDelete('CASCADE');
       table.date('date').notNullable();
       table.time('time').nullable(); // NULL for daily aggregates, populated for intraday

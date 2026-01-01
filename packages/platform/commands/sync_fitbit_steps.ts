@@ -1,4 +1,5 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
+import Provider from '#models/provider';
 import ActivityStep from '#models/activity_step';
 import { FitbitTokenRefreshService } from '#services/fitbit_token_refresh_service';
 import { StepsAggregationService } from '#services/steps_aggregation_service';
@@ -35,8 +36,13 @@ export default class SyncFitbitSteps extends BaseCommand {
     this.logger.info('[FitBit Sync] Starting steps sync...');
 
     try {
+      // Get the Fitbit provider
+      const fitbitProvider = await Provider.findByOrFail('name', 'fitbit');
+
       // Get all FitBit accounts
-      const fitbitAccounts = await Account.query().where('provider', 'fitbit').preload('user');
+      const fitbitAccounts = await ProviderAccount.query()
+        .where('provider_id', fitbitProvider.id)
+        .preload('user');
 
       this.logger.info(`[FitBit Sync] Found ${fitbitAccounts.length} FitBit accounts to sync`);
 

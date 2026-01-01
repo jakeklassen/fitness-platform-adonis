@@ -47,7 +47,9 @@ export class StepsAggregationService {
         })
         .where('date', date)
         .where('granularity', 'daily')
-        .preload('account');
+        .preload('account', (query) => {
+          query.preload('provider');
+        });
 
       if (dailyReadings.length === 0) {
         return;
@@ -78,7 +80,9 @@ export class StepsAggregationService {
       })
       .where('date', date)
       .where('granularity', 'intraday')
-      .preload('account')
+      .preload('account', (query) => {
+        query.preload('provider');
+      })
       .orderBy('time', 'asc');
 
     // Group by time slot
@@ -101,7 +105,7 @@ export class StepsAggregationService {
         mergedReadings.push({
           time,
           steps: readings[0].steps,
-          provider: readings[0].account.provider,
+          provider: readings[0].account.provider.name,
           accountId: readings[0].accountId,
         });
       } else {
@@ -110,7 +114,7 @@ export class StepsAggregationService {
         mergedReadings.push({
           time,
           steps: selected.steps,
-          provider: selected.account.provider,
+          provider: selected.account.provider.name,
           accountId: selected.accountId,
         });
       }
@@ -132,11 +136,11 @@ export class StepsAggregationService {
     }
 
     // Strategy 1: User's preferred provider
-    const user = await User.find(userId);
-    const preferredProvider = user?.preferredStepsProvider;
+    const user = await User.query().where('id', userId).preload('preferredStepsProvider').first();
+    const preferredProviderName = user?.preferredStepsProvider?.name;
 
-    if (preferredProvider) {
-      const preferred = readings.find((r) => r.account.provider === preferredProvider);
+    if (preferredProviderName) {
+      const preferred = readings.find((r) => r.account.provider.name === preferredProviderName);
       if (preferred) {
         return preferred;
       }
@@ -168,7 +172,9 @@ export class StepsAggregationService {
     // Get all user IDs that have activity data for this date
     const userIds = await ActivityStep.query()
       .where('date', date)
-      .preload('account')
+      .preload('account', (query) => {
+        query.preload('provider');
+      })
       .then((steps) => {
         const uniqueUserIds = new Set<number>();
         steps.forEach((step) => {

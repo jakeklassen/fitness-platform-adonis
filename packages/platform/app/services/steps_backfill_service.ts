@@ -1,6 +1,6 @@
-import Account from '#models/account';
 import ActivityStep from '#models/activity_step';
-import User from '#models/user';
+import Provider from '#models/provider';
+import ProviderAccount from '#models/provider_account';
 import { FitbitService } from '#services/fitbit_service';
 import { StepsAggregationService } from '#services/steps_aggregation_service';
 import logger from '@adonisjs/core/services/logger';
@@ -13,12 +13,13 @@ export class StepsBackfillService {
    */
   async backfillSteps(userId: number, startDate: DateTime, endDate: DateTime): Promise<void> {
     try {
-      const user = await User.findOrFail(userId);
+      // Get the Fitbit provider
+      const fitbitProvider = await Provider.findByOrFail('name', 'fitbit');
 
       // Get user's Fitbit account
-      const account = await Account.query()
+      const account = await ProviderAccount.query()
         .where('user_id', userId)
-        .where('provider', 'fitbit')
+        .where('provider_id', fitbitProvider.id)
         .first();
 
       if (!account) {
@@ -143,7 +144,7 @@ export class StepsBackfillService {
    */
   private async fetchAndStoreChunk(
     fitbitService: FitbitService,
-    account: Account,
+    account: ProviderAccount,
     dates: DateTime[],
   ): Promise<string[]> {
     if (dates.length === 0) return [];
@@ -203,9 +204,12 @@ export class StepsBackfillService {
    * Check if a user needs backfilling for a specific date range
    */
   async needsBackfill(userId: number, startDate: DateTime, endDate: DateTime): Promise<boolean> {
-    const account = await Account.query()
+    // Get the Fitbit provider
+    const fitbitProvider = await Provider.findByOrFail('name', 'fitbit');
+
+    const account = await ProviderAccount.query()
       .where('user_id', userId)
-      .where('provider', 'fitbit')
+      .where('provider_id', fitbitProvider.id)
       .first();
 
     if (!account) {

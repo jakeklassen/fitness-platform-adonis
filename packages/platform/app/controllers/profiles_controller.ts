@@ -1,7 +1,7 @@
-import { AccountDto } from '#dtos/account_dto';
 import { FitbitUserDto } from '#dtos/fitbit_user_dto';
+import { ProviderAccountDto } from '#dtos/provider_account_dto';
 import { UserDto } from '#dtos/user_dto';
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import { FitbitService } from '#services/fitbit_service';
 import type { HttpContext } from '@adonisjs/core/http';
 
@@ -11,9 +11,11 @@ export default class ProfilesController {
    */
   async show({ auth, inertia, ally }: HttpContext) {
     const user = auth.getUserOrFail();
-    await user.load('accounts');
+    await user.load('accounts', (query) => {
+      query.preload('provider');
+    });
 
-    const fitbitAccount = user.accounts.find((account) => account.provider === 'fitbit');
+    const fitbitAccount = user.accounts.find((account) => account.provider.name === 'fitbit');
 
     // Fetch Fitbit user data if account is linked
     const fitbitService = new FitbitService(ally);
@@ -23,12 +25,12 @@ export default class ProfilesController {
     // Fetch devices for each account and build connected accounts array
     const accountsWithDevices = await Promise.all(
       Array.from(user.accounts).map(async (account) => {
-        const accountDto = new AccountDto(account).toJson();
-        let devices = [];
+        const accountDto = new ProviderAccountDto(account).toJson();
+        let devices: any[] = [];
 
         // Only fetch devices for Fitbit accounts for now
-        if (account.provider === 'fitbit') {
-          devices = await fitbitService.getDevices(account);
+        if (account.provider.name === 'fitbit') {
+          devices = (await fitbitService.getDevices(account)) || [];
         }
 
         return {
@@ -39,16 +41,19 @@ export default class ProfilesController {
     );
 
     // Set default preferred provider to first provider if not already set
-    if (!user.preferredStepsProvider && accountsWithDevices.length > 0) {
-      user.preferredStepsProvider = accountsWithDevices[0].provider;
+    if (!user.preferredStepsProviderId && accountsWithDevices.length > 0) {
+      user.preferredStepsProviderId = user.accounts[0].providerId;
       await user.save();
     }
+
+    // Load the preferred provider if set
+    await user.load('preferredStepsProvider');
 
     return inertia.render('profile', {
       user: new UserDto(user).toJson(),
       accounts: accountsWithDevices,
       fitbitUserData,
-      preferredProvider: user.preferredStepsProvider,
+      preferredProvider: user.preferredStepsProvider?.name ?? null,
     });
   }
 
@@ -58,19 +63,17 @@ export default class ProfilesController {
   async unlinkAccount({ auth, params, response, session }: HttpContext) {
     const user = auth.getUserOrFail();
 
-    const account = await Account.query()
+    const account = await ProviderAccount.query()
       .where('id', params.id)
       .where('user_id', user.id)
+      .preload('provider')
       .firstOrFail();
 
-    const provider = account.provider;
+    const providerName = account.provider.displayName;
 
     await account.delete();
 
-    session.flash(
-      'success',
-      `${provider.charAt(0).toUpperCase() + provider.slice(1)} account disconnected successfully`,
-    );
+    session.flash('success', `${providerName} account disconnected successfully`);
 
     return response.redirect('/profile');
   }
@@ -84,23 +87,23 @@ export default class ProfilesController {
     const { provider } = request.only(['provider']);
 
     // Verify user has this provider connected
-    const hasProvider = await Account.query()
+    const account = await ProviderAccount.query()
       .where('user_id', user.id)
-      .where('provider', provider)
+      .whereHas('provider', (query) => {
+        query.where('name', provider);
+      })
+      .preload('provider')
       .first();
 
-    if (!hasProvider) {
+    if (!account) {
       session.flash('error', 'You do not have this provider connected');
       return response.redirect('/profile');
     }
 
-    user.preferredStepsProvider = provider;
+    user.preferredStepsProviderId = account.providerId;
     await user.save();
 
-    session.flash(
-      'success',
-      `${provider.charAt(0).toUpperCase() + provider.slice(1)} set as preferred provider`,
-    );
+    session.flash('success', `${account.provider.displayName} set as preferred provider`);
 
     return response.redirect('/profile');
   }

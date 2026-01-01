@@ -1,4 +1,4 @@
-import Account from '#models/account';
+import ProviderAccount from '#models/provider_account';
 import User from '#models/user';
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
 import type { BelongsTo } from '@adonisjs/lucid/types/relations';
@@ -29,8 +29,8 @@ export default class DailyStep extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
 
-  @belongsTo(() => Account, {
+  @belongsTo(() => ProviderAccount, {
     foreignKey: 'primaryAccountId',
   })
-  declare primaryAccount: BelongsTo<typeof Account>;
+  declare primaryAccount: BelongsTo<typeof ProviderAccount>;
 }

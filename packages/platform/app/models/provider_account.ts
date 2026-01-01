@@ -1,11 +1,14 @@
 import ActivityStep from '#models/activity_step';
+import Provider from '#models/provider';
 import User from '#models/user';
 import encryption from '@adonisjs/core/services/encryption';
 import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm';
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
 
-export default class Account extends BaseModel {
+export default class ProviderAccount extends BaseModel {
+  static table = 'provider_accounts';
+
   @column({ isPrimary: true })
   declare id: number;
 
@@ -13,10 +16,10 @@ export default class Account extends BaseModel {
   declare userId: number;
 
   @column()
-  declare provider: string;
+  declare providerId: number;
 
   @column()
-  declare providerId: string;
+  declare providerUserId: string;
 
   @column({
     prepare: (value: string | null) => {
@@ -49,6 +52,9 @@ export default class Account extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
+
+  @belongsTo(() => Provider)
+  declare provider: BelongsTo<typeof Provider>;
 
   @hasMany(() => ActivityStep)
   declare activitySteps: HasMany<typeof ActivityStep>;

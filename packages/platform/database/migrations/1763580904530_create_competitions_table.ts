@@ -44,8 +44,5 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.dropTable(this.tableName);
-    await this.db.rawQuery('DROP TYPE IF EXISTS competition_goal_type');
-    await this.db.rawQuery('DROP TYPE IF EXISTS visibility');
-    await this.db.rawQuery('DROP TYPE IF EXISTS competition_status');
   }
 }
