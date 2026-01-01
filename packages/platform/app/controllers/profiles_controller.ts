@@ -30,7 +30,7 @@ export default class ProfilesController {
 
         // Only fetch devices for Fitbit accounts for now
         if (account.provider.name === 'fitbit') {
-          devices = (await fitbitService.getDevices(account)) || [];
+          devices = (await fitbitService.getDevices(account)) ?? [];
         }
 
         return {
