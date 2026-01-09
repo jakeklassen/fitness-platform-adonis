@@ -7,7 +7,7 @@ interface IntradayReading {
   time: string;
   steps: number;
   provider: string;
-  accountId: number;
+  providerAccountId: number;
 }
 
 export class StepsAggregationService {
@@ -28,7 +28,7 @@ export class StepsAggregationService {
       .first();
 
     let totalSteps: number;
-    let primaryAccountId: number | null = null;
+    let primaryProviderAccountId: number | null = null;
 
     if (hasIntradayData) {
       // Use intelligent merging of intraday data
@@ -37,7 +37,7 @@ export class StepsAggregationService {
 
       // Use the most recent sync as primary
       if (merged.length > 0) {
-        primaryAccountId = merged[merged.length - 1].accountId;
+        primaryProviderAccountId = merged[merged.length - 1].providerAccountId;
       }
     } else {
       // Fall back to daily aggregation
@@ -58,13 +58,13 @@ export class StepsAggregationService {
       // Apply priority to pick one daily reading
       const selected = await this.resolveConflict(dailyReadings, userId);
       totalSteps = selected.steps;
-      primaryAccountId = selected.accountId;
+      primaryProviderAccountId = selected.providerAccountId;
     }
 
     // Upsert into daily_steps table
     await DailyStep.updateOrCreate(
       { userId, date: dateObj },
-      { steps: totalSteps, primaryAccountId },
+      { steps: totalSteps, primaryProviderAccountId },
     );
   }
 
@@ -106,7 +106,7 @@ export class StepsAggregationService {
           time,
           steps: readings[0].steps,
           provider: readings[0].account.provider.name,
-          accountId: readings[0].accountId,
+          providerAccountId: readings[0].providerAccountId,
         });
       } else {
         // Conflict - apply priority strategy
@@ -115,7 +115,7 @@ export class StepsAggregationService {
           time,
           steps: selected.steps,
           provider: selected.account.provider.name,
-          accountId: selected.accountId,
+          providerAccountId: selected.providerAccountId,
         });
       }
     }

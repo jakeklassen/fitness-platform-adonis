@@ -41,7 +41,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null;
 
   @hasMany(() => ProviderAccount)
-  declare accounts: HasMany<typeof ProviderAccount>;
+  declare providerAccounts: HasMany<typeof ProviderAccount>;
 
   @belongsTo(() => Provider, {
     foreignKey: 'preferredStepsProviderId',

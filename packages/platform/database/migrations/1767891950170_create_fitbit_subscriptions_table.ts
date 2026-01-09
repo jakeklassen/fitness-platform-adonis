@@ -1,11 +1,12 @@
 import { BaseSchema } from '@adonisjs/lucid/schema';
 
 export default class extends BaseSchema {
-  protected tableName = 'daily_steps';
+  protected tableName = 'fitbit_subscriptions';
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').notNullable();
+
       table
         .integer('user_id')
         .unsigned()
@@ -13,24 +14,27 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE');
-      table.date('date').notNullable();
-      table.integer('steps').notNullable();
+
       table
-        .integer('primary_provider_account_id')
+        .integer('provider_account_id')
         .unsigned()
-        .nullable()
+        .notNullable()
         .references('id')
         .inTable('provider_accounts')
-        .onDelete('SET NULL');
+        .onDelete('CASCADE');
+
+      table.string('subscription_id').notNullable();
+      table.string('collection_type').notNullable();
+      table.string('fitbit_subscriber_id').nullable();
+      table.boolean('is_active').defaultTo(true);
 
       table.timestamp('created_at').notNullable();
       table.timestamp('updated_at').notNullable();
 
-      // Unique constraint: one record per user per day
-      table.unique(['user_id', 'date']);
-      // Index for efficient queries
-      table.index(['user_id', 'date']);
-      table.index(['date']); // For leaderboard queries
+      // Ensure unique subscription per account per collection
+      table.unique(['provider_account_id', 'collection_type']);
+      // Ensure subscription_id is unique
+      table.unique(['subscription_id']);
     });
   }
 

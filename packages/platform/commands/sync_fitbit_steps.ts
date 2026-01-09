@@ -6,7 +6,6 @@ import { StepsAggregationService } from '#services/steps_aggregation_service';
 import { BaseCommand } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import vine from '@vinejs/vine';
-import { schedule } from 'adonisjs-scheduler';
 import { DateTime } from 'luxon';
 
 // FitBit API response schema
@@ -21,12 +20,19 @@ const fitbitStepsResponseSchema = vine.compile(
   }),
 );
 
-// TODO: Change to hourly after testing
+/**
+ * NOTE: This command is no longer scheduled to run automatically.
+ * FitBit webhook subscriptions now handle real-time data updates.
+ * This command is kept for manual runs or as a fallback if needed.
+ *
+ * To run manually: node ace sync:fitbit-steps
+ * To schedule it as a backup, uncomment the @schedule decorator below.
+ */
 // @schedule((s) => s.everyHour())
-@schedule((s) => s.everyMinute())
 export default class SyncFitbitSteps extends BaseCommand {
   static commandName = 'sync:fitbit-steps';
-  static description = 'Sync steps data from FitBit for all linked accounts';
+  static description =
+    '[DEPRECATED] Sync steps data from FitBit for all linked accounts (now handled by webhooks)';
 
   static options: CommandOptions = {
     startApp: true,
@@ -98,7 +104,7 @@ export default class SyncFitbitSteps extends BaseCommand {
 
           await ActivityStep.updateOrCreate(
             {
-              accountId: account.id,
+              providerAccountId: account.id,
               date: DateTime.fromISO(stepsData.dateTime),
               time: null, // Daily data
             },

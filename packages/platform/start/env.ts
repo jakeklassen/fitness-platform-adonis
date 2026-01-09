@@ -44,6 +44,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   FITBIT_CLIENT_ID: Env.schema.string(),
   FITBIT_CLIENT_SECRET: Env.schema.string(),
   FITBIT_CALLBACK_URL: Env.schema.string(),
+  FITBIT_SUBSCRIBER_VERIFICATION_CODE: Env.schema.string(),
 
   /*
   |----------------------------------------------------------

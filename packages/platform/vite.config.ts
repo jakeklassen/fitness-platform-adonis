@@ -20,4 +20,7 @@ export default defineConfig({
       '~/': `${getDirname(import.meta.url)}/inertia/`,
     },
   },
+  server: {
+    allowedHosts: ['8c7c674bc069.ngrok-free.app'],
+  },
 });

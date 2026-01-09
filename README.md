@@ -1,8 +1,8 @@
 # Fitness Platform
 
-The Fitness Platform project allows users to create accounts and link their fitness provider accounts for stat syncing. We start with FitBit only for now.
+The Fitness Platform project allows users to create accounts and link their fitness provider accounts for stat syncing. We only support Fitbit for now.
 
-Afterwards, users are able to creat and host simple competitions. As an example, at your job you may create a monthly steps challenge where the employee at the end of the month with the most steps wins. You would need to invite your colleagues to the competition. Simple, friendly competition to promote health.
+Afterwards, users are able to create and host simple competitions. As an example, at your job you may create a monthly steps challenge where the employee at the end of the month with the most steps wins. You would need to invite your colleagues to the competition. Simple, friendly competition to promote health.
 
 ## Time Series Data
 
@@ -12,13 +12,41 @@ We'll need to store fitness provider information in such a way that we can inter
 
 ## Providers
 
-### FitBit
+### Fitbit
 
-FitBit stat syncing could be done with subscriptions on FitBit so we can be told when new data is available for the user, fetch, and store it. However, if subscriptions do not respond consistently this can disble the subscription and we would have to manually resolve them. That's annoying for local development if we don't have something like ngrok.
+A Fitbit subscription is created for a user whenever they link their account (or updated if it already exists). This will periodically hit our webhook endpoint to notify us
+that new data is available. Users can trigger this by manually syncing their devices, or it will happen roughly every 20~ minutes.
 
-Locally we can poll every 10 minutes from the https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date/ docs. We can leverage a job for this using https://packages.adonisjs.com/packages/adonisjs-scheduler.
+When the webhook is pinged, a queued job is created in the `webhook_queue` table. Steps are synced when that job runs.
 
-For example, GET https://api.fitbit.com/1/user/-/activities/steps/date/2025-11-20/1d.json would get the users daily steps.
+For local testing you will need something like `Ngrok`. Add your URL to the `allowedHosts` array in `vite.config.ts`.
+
+Example (you can omit the `https://` part):
+
+```typescript
+server: {
+  allowedHosts: ['8c7c674bc069.ngrok-free.app'],
+},
+```
+
+You will of course also need to register the endpoint with your local Fitbit app. On the dev website, edit your app settings and add a new
+subscriber endpoint. The URL should be something like (using Ngrok for example):
+
+```
+https://0123456789.ngrok-free.app/webhooks/fitbit
+```
+
+Save your settings. You will see a verification code on your endpoint. Copy that and update the `FITBIT_SUBSCRIBER_VERIFICATION_CODE` value
+in the `.env` file. Then click the `verify` button on the endpoint.
+
+Don't forget to run the queue:
+
+```shell
+node ace process:webhook:queue
+```
+
+You should have the local app running, Ngrok or something like it exposing the app, and the webhook job queue running. Sync your device manually and you
+should see the database update.
 
 ## Open Telemetry
 

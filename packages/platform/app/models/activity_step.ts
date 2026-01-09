@@ -8,7 +8,7 @@ export default class ActivityStep extends BaseModel {
   declare id: number;
 
   @column()
-  declare accountId: number;
+  declare providerAccountId: number;
 
   @column.date()
   declare date: DateTime;

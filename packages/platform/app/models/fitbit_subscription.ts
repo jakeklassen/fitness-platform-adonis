@@ -4,21 +4,27 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
 import type { BelongsTo } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
 
-export default class DailyStep extends BaseModel {
+export default class FitbitSubscription extends BaseModel {
   @column({ isPrimary: true })
   declare id: number;
 
   @column()
   declare userId: number;
 
-  @column.date()
-  declare date: DateTime;
+  @column()
+  declare providerAccountId: number;
 
   @column()
-  declare steps: number;
+  declare subscriptionId: string;
 
   @column()
-  declare primaryProviderAccountId: number | null;
+  declare collectionType: string;
+
+  @column()
+  declare fitbitSubscriberId: string | null;
+
+  @column()
+  declare isActive: boolean;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;
@@ -29,8 +35,6 @@ export default class DailyStep extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
 
-  @belongsTo(() => ProviderAccount, {
-    foreignKey: 'primaryProviderAccountId',
-  })
-  declare primaryAccount: BelongsTo<typeof ProviderAccount>;
+  @belongsTo(() => ProviderAccount)
+  declare providerAccount: BelongsTo<typeof ProviderAccount>;
 }

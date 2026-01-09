@@ -61,7 +61,7 @@ export default class extends BaseSeeder {
           userId: user.id,
           date: date,
           steps: steps,
-          primaryAccountId: null, // No real FitBit account for test users
+          primaryProviderAccountId: null, // No real FitBit account for test users
         });
       }
     }

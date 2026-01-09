@@ -1,5 +1,7 @@
 import Provider from '#models/provider';
+import { FitbitSubscriptionService } from '#services/fitbit_subscription_service';
 import type { HttpContext } from '@adonisjs/core/http';
+import logger from '@adonisjs/core/services/logger';
 import { DateTime } from 'luxon';
 
 export default class FitbitController {
@@ -49,11 +51,12 @@ export default class FitbitController {
      * Check if this Fitbit account is already linked to this user
      */
     const existingAccount = await user
-      .related('accounts')
+      .related('providerAccounts')
       .query()
       .where('provider_id', fitbitProvider.id)
       .first();
 
+    let account;
     if (existingAccount) {
       // Update the existing account
       existingAccount.providerUserId = fitbitUser.id;
@@ -63,9 +66,10 @@ export default class FitbitController {
         ? DateTime.fromJSDate(fitbitUser.token.expiresAt)
         : null;
       await existingAccount.save();
+      account = existingAccount;
     } else {
       // Create a new account link
-      await user.related('accounts').create({
+      account = await user.related('providerAccounts').create({
         providerId: fitbitProvider.id,
         providerUserId: fitbitUser.id,
         accessToken: fitbitUser.token.token,
@@ -74,6 +78,16 @@ export default class FitbitController {
           ? DateTime.fromJSDate(fitbitUser.token.expiresAt)
           : null,
       });
+    }
+
+    // Create FitBit subscription for activity data
+    const subscriptionService = new FitbitSubscriptionService();
+    const subscription = await subscriptionService.createSubscription(account, 'activities');
+
+    if (subscription) {
+      logger.info(`Created FitBit subscription for user ${user.id}`);
+    } else {
+      logger.warn(`Failed to create FitBit subscription for user ${user.id}`);
     }
 
     session.flash('success', 'Fitbit account linked successfully!');

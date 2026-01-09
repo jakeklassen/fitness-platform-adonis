@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').notNullable();
       table
-        .integer('account_id')
+        .integer('provider_account_id')
         .unsigned()
         .notNullable()
         .references('id')
@@ -23,10 +23,10 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable();
 
       // Unique constraint: prevents duplicates at whatever granularity
-      table.unique(['account_id', 'date', 'time']);
+      table.unique(['provider_account_id', 'date', 'time']);
       // Index for efficient queries
-      table.index(['account_id', 'date']);
-      table.index(['account_id', 'date', 'time']);
+      table.index(['provider_account_id', 'date']);
+      table.index(['provider_account_id', 'date', 'time']);
     });
   }
 

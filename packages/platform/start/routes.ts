@@ -7,17 +7,24 @@
 |
 */
 
-import router from '@adonisjs/core/services/router';
 import { middleware } from '#start/kernel';
+import router from '@adonisjs/core/services/router';
 
 const AuthController = () => import('#controllers/auth_controller');
 const ProfilesController = () => import('#controllers/profiles_controller');
 const FitbitController = () => import('#controllers/fitbit_controller');
+const FitbitWebhookController = () => import('#controllers/fitbit_webhook_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
 
 // Home - accessible to both guests and authenticated users
 router.on('/').renderInertia('home').use(middleware.silentAuth());
+
+// FitBit webhook endpoint (public - no auth required)
+router.get('/webhooks/fitbit', [FitbitWebhookController, 'verify']).as('webhooks.fitbit.verify');
+router
+  .post('/webhooks/fitbit', [FitbitWebhookController, 'handleNotification'])
+  .as('webhooks.fitbit.notification');
 
 // Guest routes (not authenticated)
 router
