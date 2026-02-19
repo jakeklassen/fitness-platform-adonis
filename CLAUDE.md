@@ -169,3 +169,40 @@ const refreshService = new FitbitTokenRefreshService();
 const validToken = await refreshService.getValidAccessToken(account);
 // Returns null if refresh fails
 ```
+
+## Development Practices
+
+### Test-Driven Development
+
+We follow TDD. Tests are required for feature development — write tests first, then implement. Use PGlite or Testcontainers for PostgreSQL in integration tests (no mocking the database).
+
+### TypeScript
+
+Lean into the type system. `any`, non-null assertions (`!`), and `@ts-ignore` are a last resort — there should almost always be a better way. Prefer `unknown` over `any`, narrow with type guards, and let inference do the work where types are obvious.
+
+### Code Style
+
+Write clean, non-claustrophobic code:
+
+```typescript
+// Good — breathing room, scannable
+if (!account) {
+  throw new Error('Account not found')
+}
+
+const token = await refreshService.getValidAccessToken(account)
+
+if (!token) {
+  return null
+}
+
+// Bad — cramped, hard to scan
+if (!account) throw new Error('Account not found')
+const token = await refreshService.getValidAccessToken(account)
+if (!token) return null
+```
+
+- No single-line if/throw/return — give control flow its own block
+- `return` and `throw` get their own line within a block for easy visual scanning
+- Blank lines between logical sections
+- Let the code breathe
