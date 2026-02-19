@@ -7,7 +7,7 @@ interface IntradayReading {
   time: string;
   steps: number;
   provider: string;
-  accountId: number;
+  providerAccountId: number;
 }
 
 export class StepsAggregationService {
@@ -20,7 +20,7 @@ export class StepsAggregationService {
 
     // Check if we have ANY intraday data for this date
     const hasIntradayData = await ActivityStep.query()
-      .whereHas('account', (accountQuery) => {
+      .whereHas('providerAccount', (accountQuery) => {
         accountQuery.where('user_id', userId);
       })
       .where('date', date)
@@ -28,7 +28,7 @@ export class StepsAggregationService {
       .first();
 
     let totalSteps: number;
-    let primaryAccountId: number | null = null;
+    let primaryProviderAccountId: number | null = null;
 
     if (hasIntradayData) {
       // Use intelligent merging of intraday data
@@ -37,17 +37,17 @@ export class StepsAggregationService {
 
       // Use the most recent sync as primary
       if (merged.length > 0) {
-        primaryAccountId = merged[merged.length - 1].accountId;
+        primaryProviderAccountId = merged[merged.length - 1].providerAccountId;
       }
     } else {
       // Fall back to daily aggregation
       const dailyReadings = await ActivityStep.query()
-        .whereHas('account', (accountQuery) => {
+        .whereHas('providerAccount', (accountQuery) => {
           accountQuery.where('user_id', userId);
         })
         .where('date', date)
         .where('granularity', 'daily')
-        .preload('account', (query) => {
+        .preload('providerAccount', (query) => {
           query.preload('provider');
         });
 
@@ -58,14 +58,31 @@ export class StepsAggregationService {
       // Apply priority to pick one daily reading
       const selected = await this.resolveConflict(dailyReadings, userId);
       totalSteps = selected.steps;
-      primaryAccountId = selected.accountId;
+      primaryProviderAccountId = selected.providerAccountId;
     }
 
     // Upsert into daily_steps table
-    await DailyStep.updateOrCreate(
-      { userId, date: dateObj },
-      { steps: totalSteps, primaryAccountId },
-    );
+    // Lucid's updateOrCreate is not atomic (SELECT then INSERT), so concurrent
+    // jobs processing the same user+date can hit a unique constraint race condition.
+    try {
+      await DailyStep.updateOrCreate(
+        { userId, date: dateObj },
+        { steps: totalSteps, primaryProviderAccountId },
+      );
+    } catch (error: unknown) {
+      if (error instanceof Error && 'code' in error && error.code === '23505') {
+        await DailyStep.query()
+          .where('user_id', userId)
+          .where('date', dateObj.toISODate()!)
+          .update({
+            steps: totalSteps,
+            primaryProviderAccountId,
+            updatedAt: DateTime.now(),
+          });
+      } else {
+        throw error;
+      }
+    }
   }
 
   /**
@@ -75,12 +92,12 @@ export class StepsAggregationService {
   private async mergeIntradaySteps(userId: number, date: string): Promise<IntradayReading[]> {
     // Get all readings for this user for this date
     const allReadings = await ActivityStep.query()
-      .whereHas('account', (accountQuery) => {
+      .whereHas('providerAccount', (accountQuery) => {
         accountQuery.where('user_id', userId);
       })
       .where('date', date)
       .where('granularity', 'intraday')
-      .preload('account', (query) => {
+      .preload('providerAccount', (query) => {
         query.preload('provider');
       })
       .orderBy('time', 'asc');
@@ -105,8 +122,8 @@ export class StepsAggregationService {
         mergedReadings.push({
           time,
           steps: readings[0].steps,
-          provider: readings[0].account.provider.name,
-          accountId: readings[0].accountId,
+          provider: readings[0].providerAccount.provider.name,
+          providerAccountId: readings[0].providerAccountId,
         });
       } else {
         // Conflict - apply priority strategy
@@ -114,8 +131,8 @@ export class StepsAggregationService {
         mergedReadings.push({
           time,
           steps: selected.steps,
-          provider: selected.account.provider.name,
-          accountId: selected.accountId,
+          provider: selected.providerAccount.provider.name,
+          providerAccountId: selected.providerAccountId,
         });
       }
     }
@@ -140,7 +157,9 @@ export class StepsAggregationService {
     const preferredProviderName = user?.preferredStepsProvider?.name;
 
     if (preferredProviderName) {
-      const preferred = readings.find((r) => r.account.provider.name === preferredProviderName);
+      const preferred = readings.find(
+        (r) => r.providerAccount.provider.name === preferredProviderName,
+      );
       if (preferred) {
         return preferred;
       }
@@ -172,14 +191,14 @@ export class StepsAggregationService {
     // Get all user IDs that have activity data for this date
     const userIds = await ActivityStep.query()
       .where('date', date)
-      .preload('account', (query) => {
+      .preload('providerAccount', (query) => {
         query.preload('provider');
       })
       .then((steps) => {
         const uniqueUserIds = new Set<number>();
         steps.forEach((step) => {
-          if (step.account.userId) {
-            uniqueUserIds.add(step.account.userId);
+          if (step.providerAccount.userId) {
+            uniqueUserIds.add(step.providerAccount.userId);
           }
         });
         return Array.from(uniqueUserIds);

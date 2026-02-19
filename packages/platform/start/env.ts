@@ -44,6 +44,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   FITBIT_CLIENT_ID: Env.schema.string(),
   FITBIT_CLIENT_SECRET: Env.schema.string(),
   FITBIT_CALLBACK_URL: Env.schema.string(),
+  FITBIT_SUBSCRIBER_VERIFICATION_CODE: Env.schema.string(),
+  FITBIT_SUBSCRIBER_ID: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------
@@ -60,4 +62,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   APP_NAME: Env.schema.string(),
   APP_VERSION: Env.schema.string(),
   APP_ENV: Env.schema.enum(['development', 'staging', 'production'] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring @adonisjs/queue
+  |----------------------------------------------------------
+  */
+  QUEUE_DRIVER: Env.schema.enum(['redis', 'database', 'sync'] as const),
 });

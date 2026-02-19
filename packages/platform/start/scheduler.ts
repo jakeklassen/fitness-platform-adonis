@@ -1,3 +1,3 @@
-import scheduler from 'adonisjs-scheduler/services/main';
+import SyncFitbitStepsJob from '#jobs/sync_fitbit_steps_job';
 
-scheduler.command('inspire').everyFifteenMinutes();
+await SyncFitbitStepsJob.schedule({}).cron('0 * * * *').id('sync-fitbit-hourly');

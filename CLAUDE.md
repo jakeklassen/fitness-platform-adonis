@@ -51,23 +51,24 @@ docker compose up -d              # PostgreSQL 17.4 on :5432, Jaeger UI on :1668
 
 This is the most important architectural pattern to understand:
 
-1. **Raw data** — `activity_steps` table stores per-provider step data (keyed by `account_id`), with `daily` or `intraday` granularity
+1. **Raw data** — `activity_steps` table stores per-provider step data (keyed by `provider_account_id`), with `daily` or `intraday` granularity
 2. **Aggregated data** — `daily_steps` table stores the canonical step count per user per day (keyed by `user_id`)
-3. **Flow**: FitBit API → `activity_steps` → `StepsAggregationService` → `daily_steps`
+3. **Flow**: FitBit webhook → `ProcessFitbitNotificationJob` → FitBit API → `activity_steps` → `StepsAggregationService` → `daily_steps`
 4. **Competitions read from `daily_steps` only**
 
 When multiple providers have data for the same day, conflict resolution priority: (1) user's `preferredStepsProviderId`, (2) most recent `synced_at`, (3) first in list.
 
 ### Database Models
 
-PostgreSQL with Lucid ORM. 8 models in `app/models/`:
+PostgreSQL with Lucid ORM. 9 models in `app/models/`:
 
 | Model | Purpose |
 |---|---|
 | `User` | Auth (Scrypt), relationships to everything. Has `preferredStepsProviderId` |
 | `Provider` | Lookup table (`fitbit`, etc.) — seeded inside the migration file via `this.defer()`, not a seeder |
 | `ProviderAccount` | Per-user per-provider OAuth tokens. Unique on `(user_id, provider_id)` and `(provider_id, provider_user_id)` |
-| `ActivityStep` | Raw step data from provider. Unique on `(account_id, date, time)`. `time` is null for daily granularity |
+| `FitbitSubscription` | FitBit push notification subscriptions. Unique on `(provider_account_id, collection_type)` and `(subscription_id)` |
+| `ActivityStep` | Raw step data from provider. Unique on `(provider_account_id, date, time)`. `time` is null for daily granularity |
 | `DailyStep` | Aggregated canonical steps per user per day |
 | `Competition` | Step competitions with `draft`/`active`/`ended` status, soft-delete via `deleted_at` |
 | `CompetitionMember` | Join table with invitation workflow (`invited`/`accepted`/`declined`) |
@@ -81,6 +82,8 @@ PostgreSQL with Lucid ORM. 8 models in `app/models/`:
 |---|---|
 | `FitbitService` | FitBit API interactions. Accepts optional `AllyService` param (required for `getUserData()`, not needed for background commands) |
 | `FitbitTokenRefreshService` | Refreshes expired tokens (5-minute safety buffer) |
+| `FitbitSubscriptionService` | CRUD for FitBit push notification subscriptions (API + database) |
+| `FitbitNotificationProcessor` | Processes webhook notifications: fetches steps, stores data, handles revocation/deletion |
 | `StepsAggregationService` | Merges `activity_steps` → `daily_steps` with multi-provider conflict resolution |
 | `StepsBackfillService` | Fetches historical steps for a date range. Chunks in 30-day batches with 1s delay for rate limiting |
 | `CompetitionService` | Leaderboard, invitations, status transitions, triggers backfills on invitation acceptance |
@@ -89,9 +92,10 @@ PostgreSQL with Lucid ORM. 8 models in `app/models/`:
 
 Routes in `start/routes.ts`, organized by auth status (`middleware.guest()` vs `middleware.auth()`):
 
+- `FitbitWebhookController` — Public webhook routes (no auth/CSRF): GET `/webhooks/fitbit` (verification), POST `/webhooks/fitbit` (notifications with HMAC-SHA1 signature verification)
 - `AuthController` — Register, login, logout (session-based auth with remember-me tokens)
-- `ProfilesController` — View profile, unlink provider accounts, set preferred provider
-- `FitbitController` — OAuth redirect/callback
+- `ProfilesController` — View profile, unlink provider accounts (auto-unsubscribes FitBit), set preferred provider
+- `FitbitController` — OAuth redirect/callback (auto-subscribes to FitBit activity notifications)
 - `FriendsController` — Friend CRUD, email search (JSON endpoint), accept/decline
 - `CompetitionsController` — Competition CRUD, invitation workflow (only accepted friends can be invited)
 
@@ -117,15 +121,43 @@ Configured in `packages/platform/package.json` `imports` field:
 #controllers/*  #models/*  #services/*  #dtos/*  #validators/*
 #middleware/*  #exceptions/*  #providers/*  #config/*  #start/*
 #database/*  #tests/*  #mails/*  #listeners/*  #events/*
-#policies/*  #abilities/*
+#policies/*  #abilities/*  #jobs/*
 ```
 
 All resolve to `.js` extensions (ESM).
 
-### Scheduled Tasks & Custom Commands
+### Queue & Job Processing
 
-- `SyncFitbitSteps` (`commands/sync_fitbit_steps.ts`) — Uses `@schedule` decorator from `adonisjs-scheduler` (currently set to `everyMinute()`). Fetches steps, stores to `activity_steps`, aggregates to `daily_steps`.
-- Scheduler preload and provider are `console` environment only (see `adonisrc.ts`)
+Uses `@adonisjs/queue` with the `database` driver (PostgreSQL-backed via `queue_jobs` + `queue_schedules` tables). Jobs are in `app/jobs/`.
+
+**Worker process**: `node ace queue:work` — runs separately from the web server, processes jobs from the `fitbit` queue.
+
+| Job | Queue | Purpose |
+|---|---|---|
+| `ProcessFitbitNotificationJob` | `fitbit` | Processes individual FitBit webhook notifications. Dispatched by `FitbitWebhookController`. Routes to `FitbitNotificationProcessor` based on `collectionType`. |
+| `SyncFitbitStepsJob` | `fitbit` | Hourly fallback sync for all FitBit accounts. Scheduled via `start/scheduler.ts` with cron `0 * * * *`. Needed because FitBit doesn't retry failed notification deliveries. |
+
+**Webhook flow**: FitBit POST → `FitbitWebhookController` (HMAC-SHA1 verify) → `ProcessFitbitNotificationJob.dispatch()` → respond 204 → worker picks up job → `FitbitNotificationProcessor` → FitBit API → `activity_steps` → `StepsAggregationService` → `daily_steps`
+
+**Creating a new job**:
+```bash
+node ace make:job my_job
+```
+
+**Job pattern**:
+```typescript
+export default class MyJob extends Job<PayloadType> {
+  static options = { queue: 'default', maxRetries: 3, timeout: '30s' }
+  async execute() { /* this.payload */ }
+  async failed(error: Error) { /* this.context.attempt */ }
+}
+```
+
+**Testing jobs**: Use `queue.fake()` with `assertPushed()`, `assertPushedCount()`, `getPushedJobs()`, `getPushedJobsOn('queueName')`. Always call `queue.restore()` in teardown.
+
+### Custom Commands
+
+- `SyncFitbitSteps` (`commands/sync_fitbit_steps.ts`) — Manual CLI tool to fetch today's steps for all linked accounts. The hourly scheduled version runs as `SyncFitbitStepsJob`.
 - `ChangeUserPassword` — Admin CLI utility
 - `RefreshFitbitTokens` — Stub, not yet implemented
 

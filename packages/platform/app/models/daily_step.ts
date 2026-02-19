@@ -18,7 +18,7 @@ export default class DailyStep extends BaseModel {
   declare steps: number;
 
   @column()
-  declare primaryAccountId: number | null;
+  declare primaryProviderAccountId: number | null;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;
@@ -30,7 +30,7 @@ export default class DailyStep extends BaseModel {
   declare user: BelongsTo<typeof User>;
 
   @belongsTo(() => ProviderAccount, {
-    foreignKey: 'primaryAccountId',
+    foreignKey: 'primaryProviderAccountId',
   })
-  declare primaryAccount: BelongsTo<typeof ProviderAccount>;
+  declare primaryProviderAccount: BelongsTo<typeof ProviderAccount>;
 }

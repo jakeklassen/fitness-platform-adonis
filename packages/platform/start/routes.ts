@@ -15,6 +15,13 @@ const ProfilesController = () => import('#controllers/profiles_controller');
 const FitbitController = () => import('#controllers/fitbit_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
+const FitbitWebhookController = () => import('#controllers/fitbit_webhook_controller');
+
+// FitBit webhook routes (public, no auth/CSRF)
+router.get('/webhooks/fitbit', [FitbitWebhookController, 'verify']).as('webhooks.fitbit.verify');
+router
+  .post('/webhooks/fitbit', [FitbitWebhookController, 'handleNotification'])
+  .as('webhooks.fitbit.notify');
 
 // Home - accessible to both guests and authenticated users
 router.on('/').renderInertia('home').use(middleware.silentAuth());

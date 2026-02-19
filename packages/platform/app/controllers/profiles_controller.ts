@@ -1,9 +1,12 @@
 import { FitbitUserDto } from '#dtos/fitbit_user_dto';
 import { ProviderAccountDto } from '#dtos/provider_account_dto';
 import { UserDto } from '#dtos/user_dto';
+import FitbitSubscription from '#models/fitbit_subscription';
 import ProviderAccount from '#models/provider_account';
 import { FitbitService } from '#services/fitbit_service';
+import { FitbitSubscriptionService } from '#services/fitbit_subscription_service';
 import type { HttpContext } from '@adonisjs/core/http';
+import logger from '@adonisjs/core/services/logger';
 
 export default class ProfilesController {
   /**
@@ -11,11 +14,13 @@ export default class ProfilesController {
    */
   async show({ auth, inertia, ally }: HttpContext) {
     const user = auth.getUserOrFail();
-    await user.load('accounts', (query) => {
+    await user.load('providerAccounts', (query) => {
       query.preload('provider');
     });
 
-    const fitbitAccount = user.accounts.find((account) => account.provider.name === 'fitbit');
+    const fitbitAccount = user.providerAccounts.find(
+      (account) => account.provider.name === 'fitbit',
+    );
 
     // Fetch Fitbit user data if account is linked
     const fitbitService = new FitbitService(ally);
@@ -24,7 +29,7 @@ export default class ProfilesController {
 
     // Fetch devices for each account and build connected accounts array
     const accountsWithDevices = await Promise.all(
-      Array.from(user.accounts).map(async (account) => {
+      Array.from(user.providerAccounts).map(async (account) => {
         const accountDto = new ProviderAccountDto(account).toJson();
         let devices: any[] = [];
 
@@ -42,7 +47,7 @@ export default class ProfilesController {
 
     // Set default preferred provider to first provider if not already set
     if (!user.preferredStepsProviderId && accountsWithDevices.length > 0) {
-      user.preferredStepsProviderId = user.accounts[0].providerId;
+      user.preferredStepsProviderId = user.providerAccounts[0].providerId;
       await user.save();
     }
 
@@ -70,6 +75,22 @@ export default class ProfilesController {
       .firstOrFail();
 
     const providerName = account.provider.displayName;
+
+    // Auto-unsubscribe from FitBit notifications before deleting
+    if (account.provider.name === 'fitbit') {
+      try {
+        const subscriptionService = new FitbitSubscriptionService();
+        const activeSubscriptions = await FitbitSubscription.query()
+          .where('provider_account_id', account.id)
+          .where('is_active', true);
+
+        for (const subscription of activeSubscriptions) {
+          await subscriptionService.deleteSubscription(account, subscription);
+        }
+      } catch (error) {
+        logger.error({ err: error }, 'Failed to unsubscribe from FitBit notifications');
+      }
+    }
 
     await account.delete();
 

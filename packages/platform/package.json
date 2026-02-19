@@ -30,6 +30,7 @@
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
+    "#jobs/*": "./app/jobs/*.js",
     "#config/*": "./config/*.js"
   },
   "devDependencies": {
@@ -37,6 +38,8 @@
     "@adonisjs/eslint-config": "^2.1.2",
     "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^1.4.1",
+    "@electric-sql/pglite": "^0.3.15",
+    "@japa/api-client": "^3.2.1",
     "@japa/assert": "^4.2.0",
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.5.0",
@@ -67,6 +70,7 @@
     "@adonisjs/inertia": "^3.1.1",
     "@adonisjs/lucid": "^21.8.2",
     "@adonisjs/otel": "^1.2.0",
+    "@adonisjs/queue": "^0.4.0",
     "@adonisjs/session": "^7.7.1",
     "@adonisjs/shield": "^8.2.0",
     "@adonisjs/static": "^1.1.1",
@@ -104,7 +108,6 @@
     "@tailwindcss/vite": "^4.2.0",
     "@vinejs/vine": "^4.3.0",
     "adonis-ally-fitbit": "workspace:*",
-    "adonisjs-scheduler": "^2.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

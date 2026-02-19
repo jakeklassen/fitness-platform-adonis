@@ -94,7 +94,7 @@ export class StepsBackfillService {
     endDate: DateTime,
   ): Promise<Set<string>> {
     const existingRecords = await ActivityStep.query()
-      .where('account_id', accountId)
+      .where('provider_account_id', accountId)
       .where('granularity', 'daily')
       .whereBetween('date', [startDate.toSQLDate()!, endDate.toSQLDate()!])
       .select('date');
@@ -172,7 +172,7 @@ export class StepsBackfillService {
       for (const dayData of stepsData) {
         await ActivityStep.updateOrCreate(
           {
-            accountId: account.id,
+            providerAccountId: account.id,
             date: DateTime.fromISO(dayData.dateTime),
             time: null, // Daily aggregate, no specific time
             granularity: 'daily',

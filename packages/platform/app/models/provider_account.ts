@@ -1,4 +1,5 @@
 import ActivityStep from '#models/activity_step';
+import FitbitSubscription from '#models/fitbit_subscription';
 import Provider from '#models/provider';
 import User from '#models/user';
 import encryption from '@adonisjs/core/services/encryption';
@@ -58,4 +59,7 @@ export default class ProviderAccount extends BaseModel {
 
   @hasMany(() => ActivityStep)
   declare activitySteps: HasMany<typeof ActivityStep>;
+
+  @hasMany(() => FitbitSubscription)
+  declare fitbitSubscriptions: HasMany<typeof FitbitSubscription>;
 }

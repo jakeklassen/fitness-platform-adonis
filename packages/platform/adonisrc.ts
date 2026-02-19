@@ -28,7 +28,7 @@ export default defineConfig({
   commands: [
     () => import('@adonisjs/core/commands'),
     () => import('@adonisjs/lucid/commands'),
-    () => import('adonisjs-scheduler/commands'),
+    () => import('@adonisjs/queue/commands'),
   ],
 
   /*
@@ -58,11 +58,8 @@ export default defineConfig({
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/ally/ally_provider'),
     () => import('@adonisjs/inertia/inertia_provider'),
-    {
-      file: () => import('adonisjs-scheduler/scheduler_provider'),
-      environment: ['console'],
-    },
     () => import('@adonisjs/otel/otel_provider'),
+    () => import('@adonisjs/queue/queue_provider'),
   ],
 
   /*
@@ -76,10 +73,7 @@ export default defineConfig({
   preloads: [
     () => import('#start/routes'),
     () => import('#start/kernel'),
-    {
-      file: () => import('#start/scheduler'),
-      environment: ['console'],
-    },
+    () => import('#start/scheduler'),
   ],
 
   /*
