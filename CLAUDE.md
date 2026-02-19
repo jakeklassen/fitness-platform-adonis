@@ -172,6 +172,10 @@ const validToken = await refreshService.getValidAccessToken(account);
 
 ## Development Practices
 
+### Workflow
+
+All development work goes through GitHub issues, feature branches, and pull requests. Do not push directly to `main` unless explicitly granted permission. The flow is: issue → branch → PR → review → merge.
+
 ### Test-Driven Development
 
 We follow TDD. Tests are required for feature development — write tests first, then implement. Use PGlite or Testcontainers for PostgreSQL in integration tests (no mocking the database).
