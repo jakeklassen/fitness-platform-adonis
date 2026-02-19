@@ -20,5 +20,5 @@ export default class Provider extends BaseModel {
   declare updatedAt: DateTime;
 
   @hasMany(() => ProviderAccount)
-  declare accounts: HasMany<typeof ProviderAccount>;
+  declare providerAccounts: HasMany<typeof ProviderAccount>;
 }
