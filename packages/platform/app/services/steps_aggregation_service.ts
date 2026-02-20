@@ -70,6 +70,8 @@ export class StepsAggregationService {
         { steps: totalSteps, primaryProviderAccountId },
       );
     } catch (error: unknown) {
+      // PostgreSQL SQLSTATE 23505 = unique_violation
+      // https://www.postgresql.org/docs/current/errcodes-appendix.html
       if (error instanceof Error && 'code' in error && error.code === '23505') {
         await DailyStep.query()
           .where('user_id', userId)
