@@ -10,6 +10,7 @@ export interface LeaderboardEntry {
   userId: number;
   user: User;
   totalSteps: number;
+  dailyAverage: number;
   rank: number;
   goalReached?: boolean; // For goal-based competitions
 }
@@ -45,6 +46,10 @@ export class CompetitionService {
       .preload('user');
 
     // Get steps for each member during competition period
+    const now = DateTime.now();
+    const end = competition.endDate < now ? competition.endDate : now;
+    const elapsedDays = Math.max(1, Math.ceil(end.diff(competition.startDate, 'days').days));
+
     const leaderboard: LeaderboardEntry[] = [];
 
     for (const member of members) {
@@ -62,6 +67,7 @@ export class CompetitionService {
         userId: member.userId,
         user: member.user,
         totalSteps,
+        dailyAverage: Math.round(totalSteps / elapsedDays),
         rank: 0, // Will be set below
         goalReached:
           competition.goalType === 'goal_based' && competition.goalValue
