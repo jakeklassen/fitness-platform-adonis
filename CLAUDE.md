@@ -204,13 +204,22 @@ const validToken = await refreshService.getValidAccessToken(account);
 
 ## Development Practices
 
-### Workflow
+### Branching
 
-All development work goes through GitHub issues, feature branches, and pull requests. Do not push directly to `main` unless explicitly granted permission. The flow is: issue → branch → PR → review → merge.
+All work happens on feature branches with pull requests. Never commit directly to `main` unless explicitly granted permission. Flow: issue → branch → PR → review → merge.
 
-### Test-Driven Development
+### Test-first workflow
 
-We follow TDD. Tests are required for feature development — write tests first, then implement. Use PGlite or Testcontainers for PostgreSQL in integration tests (no mocking the database).
+Every code change **must** include tests. Do not wait for the user to ask — treat tests as part of the implementation, not a follow-up.
+
+- **Bug fixes**: Write a test that reproduces the bug _before_ (or alongside) the fix. The test should fail without the fix and pass with it.
+- **New features / components**: Add component tests (`inertia/**/*.test.tsx`) or unit tests (`tests/unit/`) covering the key behaviors introduced.
+- **Refactors**: Ensure existing tests still pass; add tests if the refactor changes observable behavior.
+- **Backend endpoints**: Add or update functional tests (`tests/functional/`).
+
+When planning work, include a "Tests" section listing what will be tested. Before opening a PR, verify all new and existing tests pass (`npx vitest run`, `node ace test`).
+
+Use PGlite or Testcontainers for PostgreSQL in integration tests (no mocking the database).
 
 ### TypeScript
 

@@ -49,6 +49,7 @@ interface LeaderboardEntry {
   userId: number;
   user: User;
   totalSteps: number;
+  dailyAverage: number;
   rank: number;
   goalReached?: boolean;
 }
@@ -249,6 +250,7 @@ export default function CompetitionShow({
                     <TableHead className="w-24">Rank</TableHead>
                     <TableHead>Participant</TableHead>
                     <TableHead className="text-right">Total Steps</TableHead>
+                    <TableHead className="text-right">Daily Avg</TableHead>
                     {competition.goalType === 'goal_based' && (
                       <TableHead className="text-center">Goal Status</TableHead>
                     )}
@@ -277,6 +279,9 @@ export default function CompetitionShow({
                       </TableCell>
                       <TableCell className={cn('text-right', getStepsTextSize(entry.rank))}>
                         {entry.totalSteps.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {entry.dailyAverage.toLocaleString()}
                       </TableCell>
                       {competition.goalType === 'goal_based' && (
                         <TableCell className="text-center">
