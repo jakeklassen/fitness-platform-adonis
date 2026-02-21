@@ -158,13 +158,18 @@ export default function FriendsIndex({ friends, pendingRequests, sentRequests }:
                     )}
                   </CardHeader>
                   <CardContent>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleRemove(friend.friendshipId)}
-                    >
-                      Remove Friend
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/friends/${friend.id}`}>View Profile</Link>
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleRemove(friend.friendshipId)}
+                      >
+                        Remove Friend
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

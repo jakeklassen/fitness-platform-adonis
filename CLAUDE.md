@@ -225,6 +225,8 @@ Use PGlite or Testcontainers for PostgreSQL in integration tests (no mocking the
 
 Lean into the type system. `any`, non-null assertions (`!`), and `@ts-ignore` are a last resort — there should almost always be a better way. Prefer `unknown` over `any`, narrow with type guards, and let inference do the work where types are obvious.
 
+**Auth in controllers**: Always use `auth.getUserOrFail()` instead of `auth.user!`. Never use non-null assertions to access the authenticated user.
+
 ### Code Style
 
 Write clean, non-claustrophobic code:
