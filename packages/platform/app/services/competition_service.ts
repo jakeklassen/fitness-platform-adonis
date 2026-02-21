@@ -248,7 +248,7 @@ export class CompetitionService {
    * Trigger backfill for a user who joined a competition
    * Fetches historical data from competition start to today
    */
-  private async triggerBackfillForUser(competitionId: number, userId: number): Promise<void> {
+  async triggerBackfillForUser(competitionId: number, userId: number): Promise<void> {
     const competition = await Competition.findOrFail(competitionId);
     const backfillService = new StepsBackfillService();
 

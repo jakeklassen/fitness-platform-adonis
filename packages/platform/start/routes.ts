@@ -15,6 +15,8 @@ const ProfilesController = () => import('#controllers/profiles_controller');
 const FitbitController = () => import('#controllers/fitbit_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
+const CompetitionDiscoveryController = () =>
+  import('#controllers/competition_discovery_controller');
 const FitbitWebhookController = () => import('#controllers/fitbit_webhook_controller');
 
 // FitBit webhook routes (public, no auth/CSRF)
@@ -65,9 +67,15 @@ router
     // Competitions
     router.get('/competitions', [CompetitionsController, 'index']).as('competitions.index');
     router
+      .get('/competitions/discover', [CompetitionDiscoveryController, 'index'])
+      .as('competitions.discover');
+    router
       .get('/competitions/create', [CompetitionsController, 'create'])
       .as('competitions.create');
     router.post('/competitions', [CompetitionsController, 'store']).as('competitions.store');
+    router
+      .post('/competitions/:id/join', [CompetitionDiscoveryController, 'join'])
+      .as('competitions.join');
     router.get('/competitions/:id', [CompetitionsController, 'show']).as('competitions.show');
     router.get('/competitions/:id/edit', [CompetitionsController, 'edit']).as('competitions.edit');
     router.put('/competitions/:id', [CompetitionsController, 'update']).as('competitions.update');

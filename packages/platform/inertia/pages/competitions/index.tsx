@@ -1,6 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Calendar, Plus, Target, User } from 'lucide-react';
+import { Calendar, Compass, Plus, Target, User } from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
@@ -83,12 +83,20 @@ export default function CompetitionsIndex({ competitions }: Props) {
               Create and join fitness challenges with friends
             </p>
           </div>
-          <Button asChild>
-            <Link href="/competitions/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Competition
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/competitions/discover">
+                <Compass className="mr-2 h-4 w-4" />
+                Discover
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/competitions/create">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Competition
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Pending Invitations */}
@@ -151,9 +159,14 @@ export default function CompetitionsIndex({ competitions }: Props) {
                 <p className="text-muted-foreground mb-4">
                   You haven't joined any competitions yet.
                 </p>
-                <Button asChild>
-                  <Link href="/competitions/create">Create Your First Competition</Link>
-                </Button>
+                <div className="flex justify-center gap-3">
+                  <Button variant="outline" asChild>
+                    <Link href="/competitions/discover">Discover Competitions</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/competitions/create">Create Your First Competition</Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (

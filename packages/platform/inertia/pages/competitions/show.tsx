@@ -225,9 +225,7 @@ export default function CompetitionShow({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleLaunch}>
-                              Launch
-                            </AlertDialogAction>
+                            <AlertDialogAction onClick={handleLaunch}>Launch</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
