@@ -106,7 +106,44 @@ export default class extends BaseSeeder {
       createdBy: users[2].id,
     });
 
-    console.log('Created 3 test competitions');
+    // Create public competitions
+    const competition4 = await Competition.create({
+      name: 'Company-Wide Step-a-thon',
+      description: 'A company-wide competition to see who can rack up the most steps!',
+      startDate: today.startOf('month'),
+      endDate: today.endOf('month'),
+      goalType: 'total_steps',
+      goalValue: null,
+      visibility: 'public',
+      status: 'active',
+      createdBy: users[0].id,
+    });
+
+    const competition5 = await Competition.create({
+      name: 'New Year Fitness Kickoff',
+      description: 'Kick off the new year by hitting 8,000 steps every day!',
+      startDate: today.minus({ weeks: 2 }),
+      endDate: today.plus({ weeks: 1 }),
+      goalType: 'goal_based',
+      goalValue: 8000,
+      visibility: 'public',
+      status: 'active',
+      createdBy: users[1].id,
+    });
+
+    const competition6 = await Competition.create({
+      name: 'Spring Into Steps',
+      description: 'Get moving this spring with a 3-week total steps challenge!',
+      startDate: today.plus({ weeks: 2 }),
+      endDate: today.plus({ weeks: 5 }),
+      goalType: 'total_steps',
+      goalValue: null,
+      visibility: 'public',
+      status: 'draft',
+      createdBy: users[3].id,
+    });
+
+    console.log('Created 6 test competitions');
 
     // Add members to competitions
     const memberData: Array<{
@@ -115,7 +152,7 @@ export default class extends BaseSeeder {
       status: MemberStatus;
       invitedBy: number | null;
     }> = [
-      // Competition 1 - Monthly Step Challenge (4 members)
+      // Competition 1 - Monthly Step Challenge (4 members, private)
       { competitionId: competition1.id, userId: users[0].id, status: 'accepted', invitedBy: null }, // Creator
       {
         competitionId: competition1.id,
@@ -136,7 +173,7 @@ export default class extends BaseSeeder {
         invitedBy: users[0].id,
       }, // Pending
 
-      // Competition 2 - 10K Daily Goal (3 members)
+      // Competition 2 - 10K Daily Goal (3 members, private)
       { competitionId: competition2.id, userId: users[1].id, status: 'accepted', invitedBy: null }, // Creator
       {
         competitionId: competition2.id,
@@ -151,7 +188,7 @@ export default class extends BaseSeeder {
         invitedBy: users[1].id,
       },
 
-      // Competition 3 - Summer Fitness Challenge (5 members)
+      // Competition 3 - Summer Fitness Challenge (5 members, private)
       { competitionId: competition3.id, userId: users[2].id, status: 'accepted', invitedBy: null }, // Creator
       {
         competitionId: competition3.id,
@@ -177,6 +214,51 @@ export default class extends BaseSeeder {
         status: 'declined',
         invitedBy: users[2].id,
       }, // Declined
+
+      // Competition 4 - Company-Wide Step-a-thon (4 members, public)
+      { competitionId: competition4.id, userId: users[0].id, status: 'accepted', invitedBy: null }, // Creator
+      {
+        competitionId: competition4.id,
+        userId: users[1].id,
+        status: 'accepted',
+        invitedBy: users[0].id,
+      },
+      {
+        competitionId: competition4.id,
+        userId: users[3].id,
+        status: 'accepted',
+        invitedBy: users[0].id,
+      },
+      {
+        competitionId: competition4.id,
+        userId: users[4].id,
+        status: 'invited',
+        invitedBy: users[0].id,
+      }, // Pending
+
+      // Competition 5 - New Year Fitness Kickoff (3 members, public)
+      { competitionId: competition5.id, userId: users[1].id, status: 'accepted', invitedBy: null }, // Creator
+      {
+        competitionId: competition5.id,
+        userId: users[2].id,
+        status: 'accepted',
+        invitedBy: users[1].id,
+      },
+      {
+        competitionId: competition5.id,
+        userId: users[5].id,
+        status: 'accepted',
+        invitedBy: users[1].id,
+      },
+
+      // Competition 6 - Spring Into Steps (2 members, public)
+      { competitionId: competition6.id, userId: users[3].id, status: 'accepted', invitedBy: null }, // Creator
+      {
+        competitionId: competition6.id,
+        userId: users[0].id,
+        status: 'accepted',
+        invitedBy: users[3].id,
+      },
     ];
 
     await CompetitionMember.createMany(memberData);
