@@ -6,12 +6,24 @@ import {
   Check,
   Edit,
   Medal,
+  Rocket,
   Target,
   Trash2,
   Trophy,
   User,
   UserPlus,
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
@@ -107,10 +119,12 @@ export default function CompetitionShow({
     router.post(`/competitions/${competition.id}/accept`);
   };
 
+  const handleLaunch = () => {
+    router.post(`/competitions/${competition.id}/launch`);
+  };
+
   const handleDelete = () => {
-    if (confirm('Are you sure you want to cancel this competition? This cannot be undone.')) {
-      router.delete(`/competitions/${competition.id}`);
-    }
+    router.delete(`/competitions/${competition.id}`);
   };
 
   const getRankIcon = (rank: number) => {
@@ -193,16 +207,62 @@ export default function CompetitionShow({
                 )}
                 {isCreator && (
                   <>
+                    {competition.status === 'draft' && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button>
+                            <Rocket className="mr-2 h-4 w-4" />
+                            Launch
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Launch competition?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will make the competition active and visible to all participants.
+                              Are you sure you want to launch "{competition.name}"?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleLaunch}>
+                              Launch
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                     <Button variant="outline" asChild>
                       <Link href={`/competitions/${competition.id}/edit`}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Link>
                     </Button>
-                    <Button variant="destructive" onClick={handleDelete}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Cancel
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Cancel
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel competition?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to cancel this competition? This cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Cancel Competition
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </>
                 )}
               </div>
