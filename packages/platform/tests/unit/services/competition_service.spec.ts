@@ -130,8 +130,9 @@ test.group('CompetitionService - leaderboard dailyAverage', () => {
   test('dailyAverage for ended competition uses end date not today', async ({ assert }) => {
     const user = await createTestUser();
 
-    const startDate = DateTime.now().minus({ days: 30 });
-    const endDate = DateTime.now().minus({ days: 2 });
+    const now = DateTime.now();
+    const startDate = now.minus({ days: 30 });
+    const endDate = now.minus({ days: 2 });
     const competition = await createCompetition(user, { startDate, endDate, status: 'ended' });
 
     const totalDays = Math.ceil(endDate.diff(startDate, 'days').days);
