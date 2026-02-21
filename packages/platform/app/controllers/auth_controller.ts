@@ -1,6 +1,8 @@
+import Friendship from '#models/friendship';
 import User from '#models/user';
 import { loginValidator } from '#validators/auth/login';
 import { registerValidator } from '#validators/auth/register';
+import app from '@adonisjs/core/services/app';
 import type { HttpContext } from '@adonisjs/core/http';
 
 export default class AuthController {
@@ -18,6 +20,23 @@ export default class AuthController {
     const data = await request.validateUsing(registerValidator);
 
     const user = await User.create(data);
+
+    if (app.inDev) {
+      const seededUsers = await User.query().where('email', 'like', '%@example.com');
+
+      const selectedUsers = seededUsers.filter(() => Math.random() < 0.65);
+
+      if (selectedUsers.length > 0) {
+        await Friendship.createMany(
+          selectedUsers.map((seededUser) => ({
+            userId: user.id,
+            friendId: seededUser.id,
+            status: 'accepted' as const,
+          })),
+        );
+      }
+    }
+
     await auth.use('web').login(user);
 
     return response.redirect('/profile');
