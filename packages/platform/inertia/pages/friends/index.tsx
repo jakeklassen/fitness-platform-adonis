@@ -1,6 +1,17 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Check, Clock, UserPlus, Users, X } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
@@ -37,12 +48,6 @@ export default function FriendsIndex({ friends, pendingRequests, sentRequests }:
 
   const handleDecline = (friendshipId: number) => {
     router.post(`/friends/${friendshipId}/decline`);
-  };
-
-  const handleRemove = (friendshipId: number) => {
-    if (confirm('Are you sure you want to remove this friend?')) {
-      router.delete(`/friends/${friendshipId}`);
-    }
   };
 
   return (
@@ -162,13 +167,31 @@ export default function FriendsIndex({ friends, pendingRequests, sentRequests }:
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/friends/${friend.id}`}>View Profile</Link>
                       </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemove(friend.friendshipId)}
-                      >
-                        Remove Friend
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            Remove Friend
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove friend?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to remove this friend? You will no longer be
+                              able to see each other's activity or compete together.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => router.delete(`/friends/${friend.friendshipId}`)}
+                            >
+                              Remove Friend
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
