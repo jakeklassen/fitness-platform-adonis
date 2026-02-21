@@ -242,23 +242,23 @@ export default function CompetitionShow({
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive">
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Cancel
+                          Delete
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Cancel competition?</AlertDialogTitle>
+                          <AlertDialogTitle>Delete competition?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to cancel this competition? This cannot be undone.
+                            Are you sure you want to delete this competition? This cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Keep</AlertDialogCancel>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={handleDelete}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            Cancel Competition
+                            Delete Competition
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

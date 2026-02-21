@@ -243,15 +243,15 @@ export default class CompetitionsController {
   }
 
   /**
-   * Cancel (soft delete) a competition
+   * Delete (soft delete) a competition
    */
   async destroy({ auth, params, response, session }: HttpContext) {
     const user = auth.getUserOrFail();
     const competitionService = new CompetitionService();
 
     try {
-      await competitionService.cancelCompetition(params.id, user.id);
-      session.flash('success', 'Competition cancelled successfully');
+      await competitionService.deleteCompetition(params.id, user.id);
+      session.flash('success', 'Competition deleted successfully');
     } catch (error) {
       session.flash('error', error.message);
     }
