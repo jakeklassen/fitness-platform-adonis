@@ -206,14 +206,14 @@ export class CompetitionService {
   }
 
   /**
-   * Soft delete (cancel) a competition
+   * Soft delete a competition
    */
-  async cancelCompetition(competitionId: number, userId: number): Promise<Competition> {
+  async deleteCompetition(competitionId: number, userId: number): Promise<Competition> {
     const competition = await Competition.findOrFail(competitionId);
 
-    // Only creator can cancel
+    // Only creator can delete
     if (competition.createdBy !== userId) {
-      throw new Error('Access denied: Only the competition creator can cancel it');
+      throw new Error('Access denied: Only the competition creator can delete it');
     }
 
     competition.deletedAt = DateTime.now();
