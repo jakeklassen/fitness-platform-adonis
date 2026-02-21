@@ -71,6 +71,9 @@ router
     router.get('/competitions/:id/edit', [CompetitionsController, 'edit']).as('competitions.edit');
     router.put('/competitions/:id', [CompetitionsController, 'update']).as('competitions.update');
     router
+      .post('/competitions/:id/launch', [CompetitionsController, 'launch'])
+      .as('competitions.launch');
+    router
       .delete('/competitions/:id', [CompetitionsController, 'destroy'])
       .as('competitions.destroy');
 

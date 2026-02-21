@@ -215,6 +215,34 @@ export default class CompetitionsController {
   }
 
   /**
+   * Launch a draft competition (transition to active)
+   */
+  async launch({ auth, params, response, session }: HttpContext) {
+    const user = auth.getUserOrFail();
+
+    const competition = await Competition.query()
+      .where('id', params.id)
+      .whereNull('deleted_at')
+      .firstOrFail();
+
+    if (competition.createdBy !== user.id) {
+      session.flash('error', 'Only the creator can launch this competition');
+      return response.redirect().toRoute('competitions.show', { id: competition.id });
+    }
+
+    if (competition.status !== 'draft') {
+      session.flash('error', 'Only draft competitions can be launched');
+      return response.redirect().toRoute('competitions.show', { id: competition.id });
+    }
+
+    competition.status = 'active';
+    await competition.save();
+
+    session.flash('success', 'Competition launched successfully!');
+    return response.redirect().toRoute('competitions.show', { id: competition.id });
+  }
+
+  /**
    * Cancel (soft delete) a competition
    */
   async destroy({ auth, params, response, session }: HttpContext) {
