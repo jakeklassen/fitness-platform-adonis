@@ -1,6 +1,7 @@
 import { assert } from '@japa/assert';
 import { apiClient } from '@japa/api-client';
 import { authApiClient } from '@adonisjs/auth/plugins/api_client';
+import { inertiaApiClient } from '@adonisjs/inertia/plugins/api_client';
 import { sessionApiClient } from '@adonisjs/session/plugins/api_client';
 import { shieldApiClient } from '@adonisjs/shield/plugins/api_client';
 import app from '@adonisjs/core/services/app';
@@ -23,6 +24,7 @@ export const plugins: Config['plugins'] = [
   shieldApiClient(),
   authApiClient(app),
   sessionApiClient(app),
+  inertiaApiClient(app),
 ];
 
 /**

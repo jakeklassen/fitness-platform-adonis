@@ -1,6 +1,8 @@
+import DailyStep from '#models/daily_step';
 import Friendship from '#models/friendship';
 import User from '#models/user';
 import type { HttpContext } from '@adonisjs/core/http';
+import { DateTime } from 'luxon';
 
 export default class FriendsController {
   /**
@@ -43,6 +45,90 @@ export default class FriendsController {
       friends: friends,
       pendingRequests: pendingRequests,
       sentRequests: sentRequests,
+    });
+  }
+
+  /**
+   * Show a friend's profile with step stats
+   */
+  async show({ auth, params, response, session, inertia }: HttpContext) {
+    const user = auth.getUserOrFail();
+    const friendUserId = Number(params.userId);
+
+    // Verify accepted friendship exists in either direction
+    const friendship = await Friendship.query()
+      .where((query) => {
+        query
+          .where((sub) => {
+            sub.where('user_id', user.id).where('friend_id', friendUserId);
+          })
+          .orWhere((sub) => {
+            sub.where('user_id', friendUserId).where('friend_id', user.id);
+          });
+      })
+      .where('status', 'accepted')
+      .first();
+
+    if (!friendship) {
+      session.flash('error', 'You can only view profiles of accepted friends');
+      return response.redirect().toRoute('friends.index');
+    }
+
+    // Get friend user data (no email, no password)
+    const friend = await User.query()
+      .where('id', friendUserId)
+      .select('id', 'full_name')
+      .firstOrFail();
+
+    const today = DateTime.now().startOf('day');
+    const sevenDaysAgo = today.minus({ days: 6 });
+    const thirtyDaysAgo = today.minus({ days: 29 });
+
+    // Last 7 days of daily steps for the chart
+    const recentSteps = await DailyStep.query()
+      .where('user_id', friendUserId)
+      .where('date', '>=', sevenDaysAgo.toSQLDate()!)
+      .where('date', '<=', today.toSQLDate()!)
+      .orderBy('date', 'asc');
+
+    // Build zero-filled 7-day array
+    const last7Days: { date: string; steps: number }[] = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = sevenDaysAgo.plus({ days: i });
+      const dayStr = day.toSQLDate()!;
+      const record = recentSteps.find((r) => r.date.toSQLDate() === dayStr);
+
+      last7Days.push({
+        date: dayStr,
+        steps: record ? record.steps : 0,
+      });
+    }
+
+    // Last 30 days aggregate
+    const thirtyDayResult = await DailyStep.query()
+      .where('user_id', friendUserId)
+      .where('date', '>=', thirtyDaysAgo.toSQLDate()!)
+      .where('date', '<=', today.toSQLDate()!)
+      .sum('steps as total')
+      .count('* as daysWithData')
+      .first();
+
+    const total30Days = Number(thirtyDayResult?.$extras.total ?? 0);
+    const dailyAverage = Math.round(total30Days / 30);
+
+    // Today's steps
+    const todayRecord = last7Days[last7Days.length - 1];
+    const todaySteps = todayRecord ? todayRecord.steps : 0;
+
+    return inertia.render('friends/show', {
+      friend: friend.serialize(),
+      stats: {
+        todaySteps,
+        total30Days,
+        dailyAverage,
+        last7Days,
+      },
     });
   }
 

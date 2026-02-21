@@ -56,6 +56,7 @@ router
     router.get('/friends', [FriendsController, 'index']).as('friends.index');
     router.get('/friends/add', [FriendsController, 'create']).as('friends.create');
     router.post('/friends/search', [FriendsController, 'search']).as('friends.search');
+    router.get('/friends/:userId', [FriendsController, 'show']).as('friends.show');
     router.post('/friends/:userId', [FriendsController, 'store']).as('friends.store');
     router.post('/friends/:id/accept', [FriendsController, 'accept']).as('friends.accept');
     router.post('/friends/:id/decline', [FriendsController, 'decline']).as('friends.decline');
