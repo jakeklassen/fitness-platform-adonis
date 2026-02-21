@@ -9,7 +9,7 @@ export default class FriendsController {
    * Display friends list and pending requests
    */
   async index({ auth, inertia }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
 
     // Get accepted friends (where user is either sender or receiver)
     const acceptedFriendships = await Friendship.query()
@@ -143,7 +143,7 @@ export default class FriendsController {
    * Search for a user by email
    */
   async search({ auth, request, response }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
     const { email } = request.only(['email']);
 
     if (!email || email.trim() === '') {
@@ -196,7 +196,7 @@ export default class FriendsController {
    * Send a friend request
    */
   async store({ auth, params, response, session }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
     const friendId = params.userId;
 
     // Check if friend exists
@@ -251,7 +251,7 @@ export default class FriendsController {
    * Accept a friend request
    */
   async accept({ auth, params, response, session }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
     const friendshipId = params.id;
 
     const friendship = await Friendship.find(friendshipId);
@@ -284,7 +284,7 @@ export default class FriendsController {
    * Decline a friend request
    */
   async decline({ auth, params, response, session }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
     const friendshipId = params.id;
 
     const friendship = await Friendship.find(friendshipId);
@@ -311,7 +311,7 @@ export default class FriendsController {
    * Remove a friend
    */
   async destroy({ auth, params, response, session }: HttpContext) {
-    const user = auth.user!;
+    const user = auth.getUserOrFail();
     const friendshipId = params.id;
 
     const friendship = await Friendship.find(friendshipId);
