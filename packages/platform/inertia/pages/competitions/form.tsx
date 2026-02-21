@@ -1,6 +1,8 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { FormEvent } from 'react';
+import { DatePicker } from '~/components/date-picker';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
@@ -33,18 +35,22 @@ interface Props extends PageProps {
 }
 
 export default function CompetitionForm({ competition, isEdit }: Props) {
-  const formatDateForInput = (dateString: string | undefined) => {
-    if (!dateString) return '';
-    // Handle both string and Date object
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+  const parseDate = (dateString: string | undefined): Date | undefined => {
+    if (!dateString) {
+      return undefined;
+    }
+
+    // Parse YYYY-MM-DD as local date (not UTC)
+    const [year, month, day] = dateString.split('T')[0].split('-').map(Number);
+
+    return new Date(year, month - 1, day);
   };
 
-  const { data, setData, post, put, processing, errors } = useForm({
+  const { data, setData, post, put, processing, errors, transform } = useForm({
     name: competition?.name || '',
     description: competition?.description || '',
-    startDate: formatDateForInput(competition?.startDate),
-    endDate: formatDateForInput(competition?.endDate),
+    startDate: parseDate(competition?.startDate),
+    endDate: parseDate(competition?.endDate),
     goalType: (competition?.goalType || 'total_steps') as 'total_steps' | 'goal_based',
     goalValue: competition?.goalValue || '',
     visibility: (competition?.visibility || 'private') as 'private' | 'public',
@@ -54,20 +60,14 @@ export default function CompetitionForm({ competition, isEdit }: Props) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // Transform data for submission
-    setData({
-      ...data,
-      description: data.description || '',
-      goalValue: data.goalValue ? data.goalValue : '',
-      startDate: data.startDate,
-      endDate: data.endDate,
-      goalType: data.goalType,
-      visibility: data.visibility,
-      status: data.status,
-      name: data.name,
-    });
+    transform((formData) => ({
+      ...formData,
+      startDate: formData.startDate ? format(formData.startDate, 'yyyy-MM-dd') : '',
+      endDate: formData.endDate ? format(formData.endDate, 'yyyy-MM-dd') : '',
+      description: formData.description || '',
+      goalValue: formData.goalValue ? formData.goalValue : '',
+    }));
 
-    // Submit with transformed data
     if (isEdit && competition) {
       put(`/competitions/${competition.id}`);
     } else {
@@ -129,12 +129,11 @@ export default function CompetitionForm({ competition, isEdit }: Props) {
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="startDate">Start Date *</Label>
-                  <Input
+                  <DatePicker
                     id="startDate"
-                    type="date"
                     value={data.startDate}
-                    onChange={(e) => setData('startDate', e.target.value)}
-                    required
+                    onChange={(date) => setData('startDate', date)}
+                    placeholder="Select start date"
                   />
                   {errors.startDate && (
                     <p className="text-sm text-destructive">{errors.startDate}</p>
@@ -143,12 +142,11 @@ export default function CompetitionForm({ competition, isEdit }: Props) {
 
                 <div className="space-y-2">
                   <Label htmlFor="endDate">End Date *</Label>
-                  <Input
+                  <DatePicker
                     id="endDate"
-                    type="date"
                     value={data.endDate}
-                    onChange={(e) => setData('endDate', e.target.value)}
-                    required
+                    onChange={(date) => setData('endDate', date)}
+                    placeholder="Select end date"
                   />
                   {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
                 </div>
