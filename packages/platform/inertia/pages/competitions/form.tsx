@@ -1,6 +1,6 @@
 import type { PageProps } from '@adonisjs/inertia/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { FormEvent } from 'react';
 import { DatePicker } from '~/components/date-picker';
 import { Button } from '~/components/ui/button';
@@ -46,11 +46,20 @@ export default function CompetitionForm({ competition, isEdit }: Props) {
     return new Date(year, month - 1, day);
   };
 
-  const { data, setData, post, put, processing, errors, transform } = useForm({
+  const { data, setData, post, put, processing, errors, transform } = useForm<{
+    name: string;
+    description: string;
+    startDate: Date | undefined;
+    endDate: Date | undefined;
+    goalType: 'total_steps' | 'goal_based';
+    goalValue: number | string;
+    visibility: 'private' | 'public';
+    status: string;
+  }>({
     name: competition?.name || '',
     description: competition?.description || '',
-    startDate: parseDate(competition?.startDate),
-    endDate: parseDate(competition?.endDate),
+    startDate: parseDate(competition?.startDate) ?? startOfMonth(new Date()),
+    endDate: parseDate(competition?.endDate) ?? endOfMonth(new Date()),
     goalType: (competition?.goalType || 'total_steps') as 'total_steps' | 'goal_based',
     goalValue: competition?.goalValue || '',
     visibility: (competition?.visibility || 'private') as 'private' | 'public',
