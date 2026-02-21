@@ -1,3 +1,4 @@
+import BackfillFitbitStepsJob from '#jobs/backfill_fitbit_steps_job';
 import Provider from '#models/provider';
 import { FitbitSubscriptionService } from '#services/fitbit_subscription_service';
 import type { HttpContext } from '@adonisjs/core/http';
@@ -88,6 +89,13 @@ export default class FitbitController {
     } catch (error) {
       logger.error({ err: error }, 'Failed to auto-subscribe to FitBit notifications');
     }
+
+    // Backfill last 30 days of step data so the dashboard isn't empty (fire-and-forget)
+    void BackfillFitbitStepsJob.dispatch({ userId: user.id })
+      .run()
+      .catch((error: unknown) => {
+        logger.error({ error, userId: user.id }, 'Failed to dispatch backfill job');
+      });
 
     session.flash('success', 'Fitbit account linked successfully!');
     return response.redirect('/profile');
