@@ -14,7 +14,15 @@ const allyConfig = defineConfig({
     clientId: env.get('GOOGLE_CLIENT_ID'),
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
     callbackUrl: env.get('GOOGLE_CALLBACK_URL'),
-    scopes: ['https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly'],
+    scopes: [
+      // Identity scopes — required so `.user()` can read the Google profile
+      // (the driver replaces its defaults when `scopes` is set).
+      'openid',
+      'userinfo.email',
+      'userinfo.profile',
+      // Google Health data access.
+      'https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly',
+    ],
     accessType: 'offline',
     prompt: 'consent',
   }),
