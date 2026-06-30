@@ -44,6 +44,10 @@ export default function Profile({ user, accounts, fitbitUserData, preferredProvi
     window.location.href = '/auth/fitbit';
   };
 
+  const handleLinkGoogle = () => {
+    window.location.href = '/auth/google';
+  };
+
   const handleUnlinkAccount = (accountId: number) => {
     router.delete(`/profile/accounts/${accountId}`);
   };
@@ -53,6 +57,7 @@ export default function Profile({ user, accounts, fitbitUserData, preferredProvi
   };
 
   const fitbitAccount = accounts.find((account) => account.provider === 'fitbit');
+  const googleAccount = accounts.find((account) => account.provider === 'google_health');
 
   return (
     <AuthenticatedLayout>
@@ -233,6 +238,28 @@ export default function Profile({ user, accounts, fitbitUserData, preferredProvi
                   </div>
                   <Button
                     onClick={handleLinkFitbit}
+                    className="bg-emerald-600/60 text-white hover:bg-emerald-600/80"
+                  >
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Connect
+                  </Button>
+                </div>
+              )}
+
+              {/* Show link button if no Google Health connected (#54) */}
+              {!googleAccount && (
+                <div className="flex items-center justify-between p-4 border rounded-lg border-dashed">
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-8 h-8 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">Google Health</p>
+                      <p className="text-sm text-muted-foreground">
+                        Sync your activity and fitness data from Google Health.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleLinkGoogle}
                     className="bg-emerald-600/60 text-white hover:bg-emerald-600/80"
                   >
                     <LinkIcon className="mr-2 h-4 w-4" />

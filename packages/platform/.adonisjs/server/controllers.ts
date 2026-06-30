@@ -9,5 +9,6 @@ export const controllers = {
   Fitbit: () => import('#controllers/fitbit_controller'),
   FitbitWebhook: () => import('#controllers/fitbit_webhook_controller'),
   Friends: () => import('#controllers/friends_controller'),
+  Google: () => import('#controllers/google_controller'),
   Profiles: () => import('#controllers/profiles_controller'),
 }
