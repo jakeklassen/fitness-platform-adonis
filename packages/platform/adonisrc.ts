@@ -1,6 +1,7 @@
 import { indexEntities } from '@adonisjs/core';
 import { defineConfig } from '@adonisjs/core/app';
 import { indexPages } from '@adonisjs/inertia';
+import { generateRegistry } from '@tuyau/core/hooks';
 
 export default defineConfig({
   /*
@@ -109,7 +110,7 @@ export default defineConfig({
   ],
 
   hooks: {
-    init: [indexEntities(), indexPages({ framework: 'react' })],
+    init: [indexEntities(), indexPages({ framework: 'react' }), generateRegistry()],
     buildStarting: [() => import('@adonisjs/vite/build_hook')],
   },
 });
