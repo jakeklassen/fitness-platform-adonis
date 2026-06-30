@@ -1,3 +1,4 @@
+import { UserDto } from '#dtos/user_dto';
 import type { HttpContext } from '@adonisjs/core/http';
 import type { NextFn } from '@adonisjs/core/types/http';
 import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware';
@@ -10,10 +11,13 @@ import type { InferSharedProps } from '@adonisjs/inertia/types';
  */
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
   share(ctx: HttpContext) {
+    const authUser = ctx.auth?.user;
+
     return {
-      // Use `undefined` (not `null`) when logged out — the Inertia serializer
-      // rejects `null` "always" prop values.
-      user: ctx.inertia.always(ctx.auth?.user),
+      // Share a plain DTO, not the raw Lucid model: the Inertia serializer
+      // doesn't read a model's column values, and `undefined` (not `null`) is
+      // required when logged out since the serializer rejects null.
+      user: ctx.inertia.always(authUser ? new UserDto(authUser).toJson() : undefined),
       flash: ctx.inertia.always(
         (ctx.session?.flashMessages.all() as { success?: string; error?: string }) ?? {},
       ),
