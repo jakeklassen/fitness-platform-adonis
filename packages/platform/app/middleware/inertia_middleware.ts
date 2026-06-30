@@ -11,7 +11,9 @@ import type { InferSharedProps } from '@adonisjs/inertia/types';
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
   share(ctx: HttpContext) {
     return {
-      user: ctx.inertia.always(ctx.auth?.user ?? null),
+      // Use `undefined` (not `null`) when logged out — the Inertia serializer
+      // rejects `null` "always" prop values.
+      user: ctx.inertia.always(ctx.auth?.user),
       flash: ctx.inertia.always(
         (ctx.session?.flashMessages.all() as { success?: string; error?: string }) ?? {},
       ),
