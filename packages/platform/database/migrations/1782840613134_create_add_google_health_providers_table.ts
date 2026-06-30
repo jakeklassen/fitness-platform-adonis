@@ -4,7 +4,7 @@ export default class extends BaseSchema {
   protected tableName = 'providers';
 
   async up() {
-    // Seed the Google Health provider (replaces Fitbit going forward — see #54).
+    // Seed the Google Health provider (replaces Fitbit going forward).
     this.defer(async (db) => {
       await db.table(this.tableName).insert({
         name: 'google_health',

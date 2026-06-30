@@ -5,7 +5,7 @@ import { FitBitService } from 'adonis-ally-fitbit';
 
 const allyConfig = defineConfig({
   /**
-   * Google Health (#54) — standard Google OAuth 2.0. `accessType: 'offline'` +
+   * Google Health — standard Google OAuth 2.0. `accessType: 'offline'` +
    * `prompt: 'consent'` are required to receive a refresh token. The
    * `activity_and_fitness.readonly` scope is a Restricted scope (requires Google
    * verification for production use).
@@ -28,7 +28,7 @@ const allyConfig = defineConfig({
   }),
 
   /**
-   * Fitbit — being retired in favour of Google Health (#54). Still registered
+   * Fitbit — being retired in favour of Google Health. Still registered
    * because the Fitbit data/webhook services consume it until their Google
    * replacements land.
    */
