@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, router } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import {
   Award,
   Calendar,
@@ -77,14 +78,14 @@ interface Membership {
   status: 'invited' | 'accepted' | 'declined';
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   competition: Competition;
   leaderboard: LeaderboardEntry[] | null;
   stats: CompetitionStats | null;
   membership: Membership | null;
   isMember: boolean;
   isCreator: boolean;
-}
+}>;
 
 export default function CompetitionShow({
   competition,
@@ -225,9 +226,7 @@ export default function CompetitionShow({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleLaunch}>
-                              Launch
-                            </AlertDialogAction>
+                            <AlertDialogAction onClick={handleLaunch}>Launch</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

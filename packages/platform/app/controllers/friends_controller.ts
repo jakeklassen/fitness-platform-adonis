@@ -1,3 +1,4 @@
+import { UserDto } from '#dtos/user_dto';
 import DailyStep from '#models/daily_step';
 import Friendship from '#models/friendship';
 import User from '#models/user';
@@ -24,7 +25,7 @@ export default class FriendsController {
     const friends = acceptedFriendships.map((friendship) => {
       const friend = friendship.userId === user.id ? friendship.friend : friendship.user;
       return {
-        ...friend.serialize(),
+        ...new UserDto(friend).toJson(),
         friendshipId: friendship.id,
       };
     });
@@ -42,9 +43,15 @@ export default class FriendsController {
       .preload('friend');
 
     return inertia.render('friends/index', {
-      friends: friends,
-      pendingRequests: pendingRequests,
-      sentRequests: sentRequests,
+      friends,
+      pendingRequests: pendingRequests.map((request) => ({
+        id: request.id,
+        user: new UserDto(request.user).toJson(),
+      })),
+      sentRequests: sentRequests.map((request) => ({
+        id: request.id,
+        friend: new UserDto(request.friend).toJson(),
+      })),
     });
   }
 
@@ -122,7 +129,10 @@ export default class FriendsController {
     const todaySteps = todayRecord ? todayRecord.steps : 0;
 
     return inertia.render('friends/show', {
-      friend: friend.serialize(),
+      friend: {
+        id: friend.id,
+        fullName: friend.fullName,
+      },
       stats: {
         todaySteps,
         total30Days,
@@ -136,7 +146,7 @@ export default class FriendsController {
    * Show form to search and add friends by email
    */
   async create({ inertia }: HttpContext) {
-    return inertia.render('friends/create');
+    return inertia.render('friends/create', {});
   }
 
   /**

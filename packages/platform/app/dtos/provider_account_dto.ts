@@ -1,4 +1,4 @@
-import ProviderAccount from '#models/provider_account';
+import type ProviderAccount from '#models/provider_account';
 
 export class ProviderAccountDto {
   constructor(private account: ProviderAccount) {}

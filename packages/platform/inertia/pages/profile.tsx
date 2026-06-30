@@ -1,6 +1,7 @@
-import ProfilesController from '#controllers/profiles_controller';
-import { InferPageProps } from '@adonisjs/inertia/types';
+import type { FitbitUserDto } from '#dtos/fitbit_user_dto';
+import type { ProviderAccountDto } from '#dtos/provider_account_dto';
 import { Head, router } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import {
   Activity,
   Battery,
@@ -32,9 +33,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/com
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
 
-export default function Profile(props: InferPageProps<ProfilesController, 'show'>) {
-  const { user, accounts, fitbitUserData, preferredProvider } = props;
+type Props = InertiaProps<{
+  accounts: Array<ReturnType<ProviderAccountDto['toJson']> & { devices: any[] }>;
+  fitbitUserData: ReturnType<FitbitUserDto['toJson']> | null;
+  preferredProvider: string | null;
+}>;
 
+export default function Profile({ user, accounts, fitbitUserData, preferredProvider }: Props) {
   const handleLinkFitbit = () => {
     window.location.href = '/auth/fitbit';
   };
@@ -63,11 +68,11 @@ export default function Profile(props: InferPageProps<ProfilesController, 'show'
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-              <p className="text-lg mt-1">{user.fullName || 'Not provided'}</p>
+              <p className="text-lg mt-1">{user?.fullName || 'Not provided'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <p className="text-lg mt-1">{user.email}</p>
+              <p className="text-lg mt-1">{user?.email}</p>
             </div>
           </CardContent>
         </Card>

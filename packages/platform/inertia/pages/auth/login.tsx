@@ -1,6 +1,7 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import type { PageProps } from '@adonisjs/inertia/types';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, useForm } from '@inertiajs/react';
 import { Activity } from 'lucide-react';
+import type { InertiaProps } from '~/types';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Checkbox } from '~/components/ui/checkbox';
@@ -8,7 +9,7 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import GuestLayout from '~/layouts/guest-layout';
 
-interface Props extends PageProps {}
+type Props = InertiaProps;
 
 export default function Login({}: Props) {
   const { data, setData, post, processing, errors } = useForm({

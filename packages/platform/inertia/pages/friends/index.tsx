@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, router } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { Check, Clock, UserPlus, Users, X } from 'lucide-react';
 import {
   AlertDialog,
@@ -26,20 +27,21 @@ interface Friend extends User {
   friendshipId: number;
 }
 
-interface Friendship {
+interface IncomingRequest {
   id: number;
-  userId: number;
-  friendId: number;
-  status: 'pending' | 'accepted' | 'declined';
   user: User;
+}
+
+interface OutgoingRequest {
+  id: number;
   friend: User;
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   friends: Friend[];
-  pendingRequests: Friendship[];
-  sentRequests: Friendship[];
-}
+  pendingRequests: IncomingRequest[];
+  sentRequests: OutgoingRequest[];
+}>;
 
 export default function FriendsIndex({ friends, pendingRequests, sentRequests }: Props) {
   const handleAccept = (friendshipId: number) => {

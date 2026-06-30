@@ -1,6 +1,6 @@
-import ProviderAccount from '#models/provider_account';
+import type ProviderAccount from '#models/provider_account';
 import { FitbitTokenRefreshService } from '#services/fitbit_token_refresh_service';
-import { AllyService } from '@adonisjs/ally/types';
+import { type AllyService } from '@adonisjs/ally/types';
 
 interface ActivityTimeSeriesData {
   dateTime: string;

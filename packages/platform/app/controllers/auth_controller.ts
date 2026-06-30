@@ -10,7 +10,7 @@ export default class AuthController {
    * Show the registration page
    */
   async showRegister({ inertia }: HttpContext) {
-    return inertia.render('auth/register');
+    return inertia.render('auth/register', {});
   }
 
   /**
@@ -46,7 +46,7 @@ export default class AuthController {
    * Show the login page
    */
   async showLogin({ inertia }: HttpContext) {
-    return inertia.render('auth/login');
+    return inertia.render('auth/login', {});
   }
 
   /**

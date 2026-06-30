@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { format, parseISO } from 'date-fns';
 import { ArrowLeft, Footprints, TrendingUp } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
@@ -18,7 +19,7 @@ interface DaySteps {
   steps: number;
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   friend: {
     id: number;
     fullName: string | null;
@@ -29,7 +30,7 @@ interface Props extends PageProps {
     dailyAverage: number;
     last7Days: DaySteps[];
   };
-}
+}>;
 
 const chartConfig = {
   steps: {

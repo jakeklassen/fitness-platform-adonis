@@ -24,7 +24,7 @@ router
   .as('webhooks.fitbit.notify');
 
 // Home - accessible to both guests and authenticated users
-router.on('/').renderInertia('home').use(middleware.silentAuth());
+router.on('/').renderInertia('home', {}).use(middleware.silentAuth());
 
 // Guest routes (not authenticated)
 router

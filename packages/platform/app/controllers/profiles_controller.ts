@@ -1,6 +1,5 @@
 import { FitbitUserDto } from '#dtos/fitbit_user_dto';
 import { ProviderAccountDto } from '#dtos/provider_account_dto';
-import { UserDto } from '#dtos/user_dto';
 import FitbitSubscription from '#models/fitbit_subscription';
 import ProviderAccount from '#models/provider_account';
 import { FitbitService } from '#services/fitbit_service';
@@ -55,7 +54,6 @@ export default class ProfilesController {
     await user.load('preferredStepsProvider');
 
     return inertia.render('profile', {
-      user: new UserDto(user).toJson(),
       accounts: accountsWithDevices,
       fitbitUserData,
       preferredProvider: user.preferredStepsProvider?.name ?? null,

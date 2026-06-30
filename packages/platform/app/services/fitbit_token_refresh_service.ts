@@ -1,4 +1,4 @@
-import ProviderAccount from '#models/provider_account';
+import type ProviderAccount from '#models/provider_account';
 import env from '#start/env';
 import { DateTime } from 'luxon';
 

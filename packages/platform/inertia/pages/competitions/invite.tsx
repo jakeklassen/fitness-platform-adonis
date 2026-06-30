@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, useForm } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Button } from '~/components/ui/button';
@@ -21,10 +22,10 @@ interface Competition {
   description: string | null;
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   competition: Competition;
   availableUsers: User[];
-}
+}>;
 
 export default function CompetitionInvite({ competition, availableUsers }: Props) {
   const { data, setData, post, processing, errors } = useForm({
