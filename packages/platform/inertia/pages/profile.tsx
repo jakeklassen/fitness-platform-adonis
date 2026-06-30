@@ -115,8 +115,7 @@ export default function Profile({ user, accounts, fitbitUserData, preferredProvi
               {accounts.map((account) => {
                 const isPreferredProvider =
                   account.provider === preferredProvider || accounts.length === 1;
-                const providerName =
-                  account.provider.charAt(0).toUpperCase() + account.provider.slice(1);
+                const providerName = account.providerDisplayName;
 
                 return (
                   <div key={account.id} className="border rounded-lg overflow-hidden">
