@@ -1,5 +1,6 @@
+import { Link } from '@adonisjs/inertia/react';
 import type { SharedProps } from '@adonisjs/inertia/types';
-import { Link, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Activity, Menu } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';

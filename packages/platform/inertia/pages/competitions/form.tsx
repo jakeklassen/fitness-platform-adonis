@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, useForm } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { FormEvent } from 'react';
 import { DatePicker } from '~/components/date-picker';
@@ -29,10 +30,10 @@ interface Competition {
   status: 'draft' | 'active' | 'ended';
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   competition: Competition | null;
   isEdit: boolean;
-}
+}>;
 
 export default function CompetitionForm({ competition, isEdit }: Props) {
   const parseDate = (dateString: string | undefined): Date | undefined => {

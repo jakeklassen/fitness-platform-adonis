@@ -2,12 +2,17 @@
   "name": "adonis-ally-fitbit",
   "description": "Adonis Ally driver for FitBit OAuth2 service",
   "version": "0.0.0",
-  "main": "index.js",
   "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js"
+    }
+  },
   "files": [
-    "build/index.js",
-    "build/index.d.ts",
-    "build/src"
+    "build"
   ],
   "scripts": {
     "lint": "eslint . --ext=.ts",
@@ -17,20 +22,19 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@adonisjs/ally": "^5.1.1",
-    "@adonisjs/core": "^6.20.0",
-    "@adonisjs/eslint-config": "^2.1.2",
-    "@adonisjs/prettier-config": "^1.4.5",
-    "@adonisjs/tsconfig": "^1.4.1",
-    "@swc/core": "^1.15.11",
+    "@adonisjs/ally": "^6.3.0",
+    "@adonisjs/core": "^7.3.4",
+    "@adonisjs/eslint-config": "^3.1.0",
+    "@adonisjs/prettier-config": "^1.5.0",
+    "@adonisjs/tsconfig": "^2.0.0",
+    "@poppinss/ts-exec": "^1.4.4",
     "@types/node": "^24.10.13",
     "prettier": "^3.8.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@adonisjs/ally": "^5.0.0-7",
-    "@adonisjs/core": "^6.1.5-32"
+    "@adonisjs/ally": "^5.0.0-7 || ^6.0.0",
+    "@adonisjs/core": "^6.1.5-32 || ^7.0.0"
   },
   "author": "",
   "license": "MIT",

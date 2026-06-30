@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, router } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { Calendar, Plus, Target, User } from 'lucide-react';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
@@ -31,9 +32,9 @@ interface CompetitionItem {
   isCreator: boolean;
 }
 
-interface Props extends PageProps {
+type Props = InertiaProps<{
   competitions: CompetitionItem[];
-}
+}>;
 
 export default function CompetitionsIndex({ competitions }: Props) {
   const acceptedCompetitions = competitions.filter(

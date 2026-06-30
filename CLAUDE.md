@@ -13,6 +13,21 @@ pnpm workspace monorepo (pnpm 10.30.0, Node 24.13.1 — pinned in `mise.toml`):
 - `packages/platform` — Main AdonisJS application
 - `packages/adonis-ally-fitbit` — Custom AdonisJS Ally driver for FitBit OAuth2 with PKCE
 
+### Building the workspace driver (`adonis-ally-fitbit`)
+
+`adonis-ally-fitbit` is a TypeScript package that compiles to a gitignored `build/` dir; `platform` imports its compiled output (`main`/`exports` → `build/index.js`), so **`build/` must exist before `platform` can run** (dev, test, or prod — plain `node` can't load the driver's `.ts` source). pnpm does **not** auto-build workspace deps on install. This is handled by the root `prepare` script (`pnpm --filter adonis-ally-fitbit build`), which runs on a genuine fresh `pnpm install`.
+
+**CI / production must build explicitly** — `prepare` is skipped by `--ignore-scripts` and on no-op installs, and prod installs may lack dev tooling:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm --filter platform... run build   # the "..." builds adonis-ally-fitbit first via the dep graph
+# for production packaging:
+pnpm --filter platform --prod deploy ./deploy
+```
+
+If `platform` ever fails with `Cannot find package 'adonis-ally-fitbit'`, the driver hasn't been built — run `pnpm --filter adonis-ally-fitbit build`.
+
 ## Development Commands
 
 All commands run from `packages/platform/`:

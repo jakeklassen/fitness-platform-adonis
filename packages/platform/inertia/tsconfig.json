@@ -5,8 +5,16 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./*"],
+      "@generated/*": ["../.adonisjs/client/*"]
     }
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "../config/auth.ts", "../config/ally.ts"]
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../config/auth.ts",
+    "../config/ally.ts",
+    "../.adonisjs/client/**/*.ts",
+    "../.adonisjs/server/**/*.ts"
+  ]
 }

@@ -1,5 +1,6 @@
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, router } from '@inertiajs/react';
+import type { InertiaProps } from '~/types';
 import { Mail, Search, UserPlus } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Alert, AlertDescription } from '~/components/ui/alert';
@@ -15,7 +16,7 @@ interface User {
   email: string;
 }
 
-interface Props extends PageProps {}
+type Props = InertiaProps;
 
 export default function FriendsCreate({}: Props) {
   const [email, setEmail] = useState('');

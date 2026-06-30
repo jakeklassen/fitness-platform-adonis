@@ -1,3 +1,5 @@
+import { CompetitionDto } from '#dtos/competition_dto';
+import { UserDto } from '#dtos/user_dto';
 import Competition from '#models/competition';
 import CompetitionMember from '#models/competition_member';
 import Friendship from '#models/friendship';
@@ -154,10 +156,13 @@ export default class CompetitionsController {
       .first();
 
     return inertia.render('competitions/show', {
-      competition,
+      competition: {
+        ...new CompetitionDto(competition).toJson(),
+        creator: new UserDto(competition.creator).toJson(),
+      },
       leaderboard,
       stats,
-      membership,
+      membership: membership ? { status: membership.status } : null,
       isMember,
       isCreator,
     });
@@ -180,7 +185,7 @@ export default class CompetitionsController {
     }
 
     return inertia.render('competitions/form', {
-      competition,
+      competition: new CompetitionDto(competition).toJson(),
       isEdit: true,
     });
   }

@@ -1,7 +1,7 @@
 import Competition from '#models/competition';
 import CompetitionMember from '#models/competition_member';
 import DailyStep from '#models/daily_step';
-import User from '#models/user';
+import type User from '#models/user';
 import { StepsBackfillService } from '#services/steps_backfill_service';
 import logger from '@adonisjs/core/services/logger';
 import { DateTime } from 'luxon';

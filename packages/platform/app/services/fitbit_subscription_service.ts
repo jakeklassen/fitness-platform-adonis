@@ -1,5 +1,5 @@
 import FitbitSubscription from '#models/fitbit_subscription';
-import ProviderAccount from '#models/provider_account';
+import type ProviderAccount from '#models/provider_account';
 import env from '#start/env';
 import { FitbitTokenRefreshService } from '#services/fitbit_token_refresh_service';
 import logger from '@adonisjs/core/services/logger';

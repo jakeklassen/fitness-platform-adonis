@@ -1,4 +1,5 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import { Head, useForm } from '@inertiajs/react';
 import { Activity } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';

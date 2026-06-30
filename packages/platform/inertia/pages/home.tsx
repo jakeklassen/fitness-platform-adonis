@@ -1,18 +1,14 @@
-import User from '#models/user';
-import type { PageProps } from '@adonisjs/inertia/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
+import type { SharedProps } from '@adonisjs/inertia/types';
+import { Head, usePage } from '@inertiajs/react';
 import { Activity, TrendingUp, Users, Zap } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import AuthenticatedLayout from '~/layouts/authenticated-layout';
 import GuestLayout from '~/layouts/guest-layout';
 
-interface HomeProps extends PageProps {
-  user?: User;
-}
-
 export default function Home() {
-  const { user } = usePage<HomeProps>().props;
+  const { user } = usePage<SharedProps>().props;
 
   // Guest navigation
   const guestNav = (

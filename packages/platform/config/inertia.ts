@@ -1,5 +1,4 @@
 import { defineConfig } from '@adonisjs/inertia';
-import type { InferSharedProps } from '@adonisjs/inertia/types';
 
 const inertiaConfig = defineConfig({
   /**
@@ -8,13 +7,10 @@ const inertiaConfig = defineConfig({
   rootView: 'inertia_layout',
 
   /**
-   * Data that should be shared with all rendered pages
+   * Whether to encrypt the browser history state. Shared data is now provided
+   * by the Inertia middleware (`app/middleware/inertia_middleware.ts`).
    */
-  sharedData: {
-    user: (ctx) => ctx.auth?.user ?? null,
-    flash: (ctx) =>
-      (ctx.session?.flashMessages.all() as { success?: string; error?: string }) ?? {},
-  },
+  encryptHistory: false,
 
   /**
    * Options for the server-side rendering
@@ -26,7 +22,3 @@ const inertiaConfig = defineConfig({
 });
 
 export default inertiaConfig;
-
-declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
-}
