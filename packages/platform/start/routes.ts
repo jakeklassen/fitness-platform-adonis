@@ -49,11 +49,11 @@ router
       .post('/profile/set-preferred-provider', [ProfilesController, 'setPreferredProvider'])
       .as('profile.set-preferred-provider');
 
-    // Google Health OAuth (#54 — replacing Fitbit)
+    // Google Health OAuth (replacing Fitbit)
     router.get('/auth/google', [GoogleController, 'redirect']).as('google.redirect');
     router.get('/auth/google/callback', [GoogleController, 'callback']).as('google.callback');
 
-    // Fitbit OAuth (deprecated — see #54)
+    // Fitbit OAuth (deprecated)
     router.get('/auth/fitbit', [FitbitController, 'redirect']).as('fitbit.redirect');
     router.get('/auth/fitbit/callback', [FitbitController, 'callback']).as('fitbit.callback');
 

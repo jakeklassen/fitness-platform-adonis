@@ -246,7 +246,7 @@ export default function Profile({ user, accounts, fitbitUserData, preferredProvi
                 </div>
               )}
 
-              {/* Show link button if no Google Health connected (#54) */}
+              {/* Show link button if no Google Health connected */}
               {!googleAccount && (
                 <div className="flex items-center justify-between p-4 border rounded-lg border-dashed">
                   <div className="flex items-center gap-3">

@@ -63,8 +63,8 @@ export default class GoogleController {
       });
     }
 
-    // TODO(#54): subscribe to Google Health webhooks and backfill recent data
-    // once the Google Health subscription + reads services land.
+    // TODO: subscribe to Google Health webhooks and backfill recent data once
+    // the Google Health subscription + reads services land.
 
     session.flash('success', 'Google Health connected successfully!');
     return response.redirect('/profile');
