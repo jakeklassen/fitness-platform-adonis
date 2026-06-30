@@ -13,6 +13,7 @@ import { middleware } from '#start/kernel';
 const AuthController = () => import('#controllers/auth_controller');
 const ProfilesController = () => import('#controllers/profiles_controller');
 const FitbitController = () => import('#controllers/fitbit_controller');
+const GoogleController = () => import('#controllers/google_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
 const FitbitWebhookController = () => import('#controllers/fitbit_webhook_controller');
@@ -48,7 +49,11 @@ router
       .post('/profile/set-preferred-provider', [ProfilesController, 'setPreferredProvider'])
       .as('profile.set-preferred-provider');
 
-    // Fitbit OAuth
+    // Google Health OAuth (#54 — replacing Fitbit)
+    router.get('/auth/google', [GoogleController, 'redirect']).as('google.redirect');
+    router.get('/auth/google/callback', [GoogleController, 'callback']).as('google.callback');
+
+    // Fitbit OAuth (deprecated — see #54)
     router.get('/auth/fitbit', [FitbitController, 'redirect']).as('fitbit.redirect');
     router.get('/auth/fitbit/callback', [FitbitController, 'callback']).as('fitbit.callback');
 
