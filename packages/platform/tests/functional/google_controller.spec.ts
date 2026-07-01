@@ -1,29 +1,8 @@
 import Provider from '#models/provider';
 import ProviderAccount from '#models/provider_account';
 import User from '#models/user';
-import { HttpContext } from '@adonisjs/core/http';
+import { allyFake, type AllyFake } from '#tests/utils/ally_fake';
 import { test } from '@japa/runner';
-
-/**
- * `ctx.ally` is a re-registrable `HttpContext.getter`, so we override it to
- * inject a fake Google driver instead of performing a real OAuth handshake.
- */
-const originalAllyDescriptor = Object.getOwnPropertyDescriptor(HttpContext.prototype, 'ally');
-
-type FakeToken = { token: string; refreshToken: string | null; expiresAt: Date | null };
-type FakeGoogleUser = { id: string; email: string; token: FakeToken };
-
-function stubAlly(googleUser: FakeGoogleUser, flags: { accessDenied?: boolean } = {}) {
-  const driver = {
-    accessDenied: () => flags.accessDenied ?? false,
-    stateMisMatch: () => false,
-    hasError: () => false,
-    getError: () => null,
-    user: async () => googleUser,
-  };
-
-  HttpContext.getter('ally', () => ({ use: () => driver }) as never, true);
-}
 
 async function makeUser() {
   return User.create({
@@ -34,17 +13,19 @@ async function makeUser() {
 }
 
 test.group('Google Health OAuth callback', (group) => {
-  group.each.teardown(() => {
-    if (originalAllyDescriptor) {
-      Object.defineProperty(HttpContext.prototype, 'ally', originalAllyDescriptor);
-    }
+  let ally: AllyFake;
+
+  group.each.setup(() => {
+    ally = allyFake();
+
+    return () => ally.restore();
   });
 
   test('links a new google_health account and stores the tokens', async ({ client, assert }) => {
     const user = await makeUser();
     const sub = `sub-new-${Date.now()}`;
 
-    stubAlly({
+    ally.use('google').stubUser({
       id: sub,
       email: 'g@example.com',
       token: { token: 'access-1', refreshToken: 'refresh-1', expiresAt: null },
@@ -67,7 +48,7 @@ test.group('Google Health OAuth callback', (group) => {
   test('rejects a first link that did not grant a refresh token', async ({ client, assert }) => {
     const user = await makeUser();
 
-    stubAlly({
+    ally.use('google').stubUser({
       id: `sub-noref-${Date.now()}`,
       email: 'g@example.com',
       token: { token: 'access', refreshToken: null, expiresAt: null },
@@ -99,7 +80,7 @@ test.group('Google Health OAuth callback', (group) => {
     });
 
     const user = await makeUser();
-    stubAlly({
+    ally.use('google').stubUser({
       id: sharedSub,
       email: 'g@example.com',
       token: { token: 'access', refreshToken: 'refresh', expiresAt: null },
@@ -132,7 +113,7 @@ test.group('Google Health OAuth callback', (group) => {
       expiresAt: null,
     });
 
-    stubAlly({
+    ally.use('google').stubUser({
       id: sub,
       email: 'g@example.com',
       token: { token: 'new-access', refreshToken: null, expiresAt: null },
