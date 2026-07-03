@@ -12,4 +12,4 @@ export const controllers = {
   Google: () => import('#controllers/google_controller'),
   GoogleWebhook: () => import('#controllers/google_webhook_controller'),
   Profiles: () => import('#controllers/profiles_controller'),
-};
+}

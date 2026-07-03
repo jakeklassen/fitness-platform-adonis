@@ -33,7 +33,9 @@ If `platform` ever fails with `Cannot find package 'adonis-ally-fitbit'`, the dr
 All commands run from `packages/platform/`:
 
 ```bash
-pnpm dev                          # Dev server with HMR
+pnpm dev                          # Dev server (HMR) + queue worker (fitbit,google) via concurrently
+pnpm dev:server                   # Just the HMR dev server
+pnpm dev:worker                   # Just the queue worker
 pnpm build                        # Production build
 pnpm start                        # Run production server
 pnpm test                         # Run all tests (Japa runner)
