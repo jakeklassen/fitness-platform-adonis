@@ -7,8 +7,6 @@ import app from '@adonisjs/core/services/app';
 import type { health_v4 } from '@googleapis/health';
 import { test } from '@japa/runner';
 
-const STUB_HEALTH_USER_ID = 'health-user-stub';
-
 async function makeUser() {
   return User.create({
     email: `google-cb-${Date.now()}-${Math.round(performance.now())}@example.com`,
@@ -32,10 +30,14 @@ function fakeHealthService(healthUserId: string | null) {
 
 test.group('Google Health OAuth callback', (group) => {
   let ally: AllyFake;
+  // Unique per test — the suite shares one transaction and provider_user_id is
+  // unique per provider, so a fixed value would collide across tests.
+  let healthUserId: string;
 
   group.each.setup(() => {
     ally = allyFake();
-    app.container.swap(GoogleHealthService, () => fakeHealthService(STUB_HEALTH_USER_ID));
+    healthUserId = `health-${Date.now()}-${Math.round(performance.now())}`;
+    app.container.swap(GoogleHealthService, () => fakeHealthService(healthUserId));
 
     return () => {
       ally.restore();
@@ -62,10 +64,10 @@ test.group('Google Health OAuth callback', (group) => {
       .where('provider_id', provider.id)
       .firstOrFail();
 
-    assert.equal(account.providerUserId, sub);
+    // provider_user_id is the Health API user id (from getIdentity), not the OAuth sub.
+    assert.equal(account.providerUserId, healthUserId);
     assert.equal(account.accessToken, 'access-1');
     assert.equal(account.refreshToken, 'refresh-1');
-    assert.equal(account.healthUserId, STUB_HEALTH_USER_ID);
   });
 
   test('rejects a first link that did not grant a refresh token', async ({ client, assert }) => {
@@ -90,13 +92,13 @@ test.group('Google Health OAuth callback', (group) => {
 
   test('rejects a google account already connected to another user', async ({ client, assert }) => {
     const provider = await Provider.findByOrFail('name', 'google_health');
-    const sharedSub = `sub-shared-${Date.now()}`;
 
+    // The other user already owns the account for this Health user id.
     const otherUser = await makeUser();
     await ProviderAccount.create({
       userId: otherUser.id,
       providerId: provider.id,
-      providerUserId: sharedSub,
+      providerUserId: healthUserId,
       accessToken: 'other-access',
       refreshToken: 'other-refresh',
       expiresAt: null,
@@ -104,7 +106,7 @@ test.group('Google Health OAuth callback', (group) => {
 
     const user = await makeUser();
     ally.use('google').stubUser({
-      id: sharedSub,
+      id: `sub-${Date.now()}`,
       email: 'g@example.com',
       token: { token: 'access', refreshToken: 'refresh', expiresAt: null },
     });

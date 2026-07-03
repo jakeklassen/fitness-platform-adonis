@@ -23,7 +23,12 @@ export default class ProcessGoogleHealthNotificationJob extends Job<GoogleHealth
   async execute() {
     const { healthUserId, operation, dataType, intervals } = this.payload;
 
-    const account = await ProviderAccount.findBy('healthUserId', healthUserId);
+    // Google's healthUserId is stored as the provider_user_id, so notifications
+    // map to accounts the same way FitBit's do.
+    const account = await ProviderAccount.query()
+      .where('provider_user_id', healthUserId)
+      .whereHas('provider', (query) => query.where('name', 'google_health'))
+      .first();
 
     if (!account) {
       logger.warn({ healthUserId }, '[Google Webhook] No linked account for healthUserId');

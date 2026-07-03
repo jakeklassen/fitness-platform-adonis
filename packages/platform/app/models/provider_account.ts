@@ -22,9 +22,6 @@ export default class ProviderAccount extends BaseModel {
   @column()
   declare providerUserId: string;
 
-  @column()
-  declare healthUserId: string | null;
-
   @column({
     prepare: (value: string | null) => {
       return value ? encryption.encrypt(value) : null;

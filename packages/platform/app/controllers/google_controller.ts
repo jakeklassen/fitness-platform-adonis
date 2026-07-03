@@ -41,14 +41,34 @@ export default class GoogleController {
     const user = auth.getUserOrFail();
     const googleUser = await google.user();
     const { token } = googleUser;
+    const expiresAt = token.expiresAt ? DateTime.fromJSDate(token.expiresAt) : null;
 
     const provider = await Provider.findByOrFail('name', 'google_health');
+
+    // The Health API identifies users by a `healthUserId` (from getIdentity),
+    // which is what webhook notifications carry — NOT the OAuth `sub`. We store
+    // it as `provider_user_id` so notifications map back like every other
+    // provider. Resolve it from the fresh token via a transient (unsaved) account.
+    const probe = new ProviderAccount();
+    probe.accessToken = token.token;
+    probe.refreshToken = token.refreshToken ?? null;
+    probe.expiresAt = expiresAt;
+
+    const healthUserId = await this.googleHealth.getHealthUserId(probe);
+
+    if (!healthUserId) {
+      session.flash(
+        'error',
+        'Could not read your Google Health identity. Please try connecting again.',
+      );
+      return response.redirect('/profile');
+    }
 
     // Reject if this Google account is already linked to a different user —
     // the unique (provider_id, provider_user_id) constraint would 500 otherwise.
     const linkedElsewhere = await ProviderAccount.query()
       .where('provider_id', provider.id)
-      .where('provider_user_id', googleUser.id)
+      .where('provider_user_id', healthUserId)
       .whereNot('user_id', user.id)
       .first();
 
@@ -63,12 +83,8 @@ export default class GoogleController {
       .where('provider_id', provider.id)
       .first();
 
-    const expiresAt = token.expiresAt ? DateTime.fromJSDate(token.expiresAt) : null;
-
-    let account: ProviderAccount;
-
     if (existingAccount) {
-      existingAccount.providerUserId = googleUser.id;
+      existingAccount.providerUserId = healthUserId;
       existingAccount.accessToken = token.token;
       // Google only returns a refresh token on the first consent — keep the
       // stored one when it's omitted so background sync can still refresh.
@@ -77,7 +93,6 @@ export default class GoogleController {
       }
       existingAccount.expiresAt = expiresAt;
       await existingAccount.save();
-      account = existingAccount;
     } else {
       // First link must grant offline access, otherwise we can never refresh.
       if (!token.refreshToken) {
@@ -85,22 +100,13 @@ export default class GoogleController {
         return response.redirect('/profile');
       }
 
-      account = await user.related('providerAccounts').create({
+      await user.related('providerAccounts').create({
         providerId: provider.id,
-        providerUserId: googleUser.id,
+        providerUserId: healthUserId,
         accessToken: token.token,
         refreshToken: token.refreshToken,
         expiresAt,
       });
-    }
-
-    // Store the Google Health user id so webhook notifications (which carry
-    // `healthUserId`, not the OAuth sub) can be mapped back to this account.
-    const healthUserId = await this.googleHealth.getHealthUserId(account);
-
-    if (healthUserId) {
-      account.healthUserId = healthUserId;
-      await account.save();
     }
 
     // TODO: subscribe to Google Health webhooks and backfill recent data once

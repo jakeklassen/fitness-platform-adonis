@@ -40,7 +40,11 @@ function buildHealthClient(account: ProviderAccount): HealthClient {
       account.expiresAt = DateTime.fromMillis(tokens.expiry_date);
     }
 
-    void account.save();
+    // Skip transient probe accounts (e.g. the identity lookup during OAuth
+    // connect, before the row exists) — only persist real, saved accounts.
+    if (account.$isPersisted) {
+      void account.save();
+    }
   });
 
   return health({ version: 'v4', auth: oauth2 });
