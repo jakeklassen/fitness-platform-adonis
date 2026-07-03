@@ -38,19 +38,25 @@ test.group('GoogleHealthService', (group) => {
   test('aggregates step data points into per-day totals across pages', async ({ assert }) => {
     const account = await makeAccountWithValidToken();
 
+    // Shape verified against a real API response: structured civilStartTime,
+    // per-minute intervals, string `count`.
+    const civil = (year: number, month: number, day: number, hours: number, minutes: number) => ({
+      date: { year, month, day },
+      time: { hours, minutes },
+    });
+
     const pages = [
       {
         dataPoints: [
-          { steps: { interval: { civilStartTime: '2026-06-01T00:00:00' }, count: 100 } },
-          { steps: { interval: { civilStartTime: '2026-06-01T01:00:00' }, count: 50 } },
-          { steps: { interval: { civilStartTime: '2026-06-02T00:00:00' }, count: 200 } },
+          { steps: { interval: { civilStartTime: civil(2026, 6, 1, 0, 0) }, count: '100' } },
+          { steps: { interval: { civilStartTime: civil(2026, 6, 1, 1, 0) }, count: '50' } },
+          { steps: { interval: { civilStartTime: civil(2026, 6, 2, 0, 0) }, count: '200' } },
         ],
         nextPageToken: 'page-2',
       },
       {
-        // `count` as a string — Google frequently serializes numbers as strings.
         dataPoints: [
-          { steps: { interval: { civilStartTime: '2026-06-02T02:00:00' }, count: '25' } },
+          { steps: { interval: { civilStartTime: civil(2026, 6, 2, 2, 0) }, count: '25' } },
         ],
       },
     ];

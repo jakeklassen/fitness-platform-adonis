@@ -6,16 +6,20 @@ import type { DateTime } from 'luxon';
 const HEALTH_API_BASE = 'https://health.googleapis.com/v4';
 
 /**
- * NOTE: the `steps` DataPoint shape below is inferred from the Google Health API
- * reference + codelab and MUST be verified against a real API response before we
- * rely on it — in particular `count` may be serialized as a string, and
- * `civilStartTime` may be absent (derive from `startTime` + offset instead).
+ * Shapes verified against a real Google Health API `steps` response:
+ * `count` is a string, and `civilStartTime` is a structured object (not a
+ * string). Intervals are per-minute; the civil time is the user's local day.
  */
+interface CivilDateTime {
+  date?: { year?: number; month?: number; day?: number };
+  time?: { hours?: number; minutes?: number };
+}
+
 interface StepsInterval {
   startTime?: string;
   endTime?: string;
-  civilStartTime?: string;
-  civilEndTime?: string;
+  civilStartTime?: CivilDateTime;
+  civilEndTime?: CivilDateTime;
 }
 
 interface StepsDataPoint {
@@ -28,6 +32,22 @@ interface StepsDataPoint {
 interface DataPointsResponse {
   dataPoints?: StepsDataPoint[];
   nextPageToken?: string;
+}
+
+/**
+ * Format a Google Health civil date as `YYYY-MM-DD`, or null if incomplete.
+ */
+function toCivilDate(civil: CivilDateTime | undefined): string | null {
+  const date = civil?.date;
+
+  if (!date?.year || !date?.month || !date?.day) {
+    return null;
+  }
+
+  const month = String(date.month).padStart(2, '0');
+  const day = String(date.day).padStart(2, '0');
+
+  return `${date.year}-${month}-${day}`;
 }
 
 export interface DailyStepTotal {
@@ -100,14 +120,13 @@ export class GoogleHealthService {
         const data = (await response.json()) as DataPointsResponse;
 
         for (const point of data.dataPoints ?? []) {
-          const civil = point.steps?.interval?.civilStartTime ?? point.steps?.interval?.startTime;
+          const date = toCivilDate(point.steps?.interval?.civilStartTime);
           const count = Number(point.steps?.count ?? 0);
 
-          if (!civil || Number.isNaN(count)) {
+          if (!date || Number.isNaN(count)) {
             continue;
           }
 
-          const date = civil.slice(0, 10);
           totals.set(date, (totals.get(date) ?? 0) + count);
         }
 
