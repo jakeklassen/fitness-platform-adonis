@@ -45,7 +45,8 @@ Google → POST /webhooks/google → verify Authorization + X-HEALTHAPI-SIGNATUR
    - `GOOGLE_SERVICE_ACCOUNT_KEY` = the key JSON inline (e.g. injected by `op run`, so no
      file touches disk).
 3. The user must have granted the **`activity_and_fitness.readonly`** scope (reconnect
-   Google) so `getIdentity` + reads work; this also stores `health_user_id` on the account.
+   Google) so `getIdentity` + reads work; the callback stores the Health user id as
+   the account's `provider_user_id`.
 
 ## Local development / testing
 
@@ -55,7 +56,7 @@ need a tunnel.
 ```bash
 # 1. app (server + worker) — `dev` runs both via concurrently
 cd packages/platform
-node ace migration:run          # once, for the health_user_id column
+node ace migration:run          # once, to set up the schema
 pnpm dev                        # server (HMR) + worker on queues fitbit,google
 
 # 2. tunnel to the dev server (separate terminal)
@@ -105,5 +106,6 @@ shouldn't hold subscriber-admin credentials.
   one odd interval doesn't fail validation for the whole batch.
 - **The worker does not hot-reload.** HMR only watches controllers + middleware. After
   editing a **job or service**, restart `pnpm dev` or the worker keeps running stale code.
-- **`healthUserId` ≠ the OAuth `sub`.** It comes from `getIdentity` and is stored in
-  `provider_accounts.health_user_id` on connect; notifications map to accounts by it.
+- **`healthUserId` ≠ the OAuth `sub`.** It comes from `getIdentity` and is stored as the
+  account's `provider_user_id` (the generic per-provider id — no Google-specific column),
+  so notifications map to accounts the same way FitBit's do.
