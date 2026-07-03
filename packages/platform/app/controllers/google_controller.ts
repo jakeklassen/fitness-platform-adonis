@@ -1,9 +1,14 @@
 import Provider from '#models/provider';
 import ProviderAccount from '#models/provider_account';
+import { GoogleHealthService } from '#services/google_health_service';
+import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
 import { DateTime } from 'luxon';
 
+@inject()
 export default class GoogleController {
+  constructor(private googleHealth: GoogleHealthService) {}
+
   /**
    * Redirect to Google to authorize Google Health access. Scopes + offline
    * access are configured on the `google` provider in `config/ally.ts`.
@@ -60,6 +65,8 @@ export default class GoogleController {
 
     const expiresAt = token.expiresAt ? DateTime.fromJSDate(token.expiresAt) : null;
 
+    let account: ProviderAccount;
+
     if (existingAccount) {
       existingAccount.providerUserId = googleUser.id;
       existingAccount.accessToken = token.token;
@@ -70,6 +77,7 @@ export default class GoogleController {
       }
       existingAccount.expiresAt = expiresAt;
       await existingAccount.save();
+      account = existingAccount;
     } else {
       // First link must grant offline access, otherwise we can never refresh.
       if (!token.refreshToken) {
@@ -77,7 +85,7 @@ export default class GoogleController {
         return response.redirect('/profile');
       }
 
-      await user.related('providerAccounts').create({
+      account = await user.related('providerAccounts').create({
         providerId: provider.id,
         providerUserId: googleUser.id,
         accessToken: token.token,
@@ -86,8 +94,17 @@ export default class GoogleController {
       });
     }
 
+    // Store the Google Health user id so webhook notifications (which carry
+    // `healthUserId`, not the OAuth sub) can be mapped back to this account.
+    const healthUserId = await this.googleHealth.getHealthUserId(account);
+
+    if (healthUserId) {
+      account.healthUserId = healthUserId;
+      await account.save();
+    }
+
     // TODO: subscribe to Google Health webhooks and backfill recent data once
-    // the Google Health subscription + reads services land.
+    // the subscription service lands.
 
     session.flash('success', 'Google Health connected successfully!');
     return response.redirect('/profile');

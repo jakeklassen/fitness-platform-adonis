@@ -110,4 +110,23 @@ export class GoogleHealthService {
       return null;
     }
   }
+
+  /**
+   * Fetch this account's Google Health user id (`getIdentity`). Stored on connect
+   * so webhook notifications (which carry `healthUserId`) can be mapped back to an
+   * account. Returns null on API/auth error.
+   */
+  async getHealthUserId(account: ProviderAccount): Promise<string | null> {
+    const client = this.buildClient(account);
+
+    try {
+      const response = await client.users.getIdentity({ name: 'users/me/identity' });
+
+      return response.data.healthUserId ?? null;
+    } catch (error) {
+      logger.error({ err: error, accountId: account.id }, 'Failed to fetch Google Health identity');
+
+      return null;
+    }
+  }
 }

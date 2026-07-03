@@ -17,12 +17,18 @@ const GoogleController = () => import('#controllers/google_controller');
 const FriendsController = () => import('#controllers/friends_controller');
 const CompetitionsController = () => import('#controllers/competitions_controller');
 const FitbitWebhookController = () => import('#controllers/fitbit_webhook_controller');
+const GoogleWebhookController = () => import('#controllers/google_webhook_controller');
 
 // FitBit webhook routes (public, no auth/CSRF)
 router.get('/webhooks/fitbit', [FitbitWebhookController, 'verify']).as('webhooks.fitbit.verify');
 router
   .post('/webhooks/fitbit', [FitbitWebhookController, 'handleNotification'])
   .as('webhooks.fitbit.notify');
+
+// Google Health webhook (public, no auth/CSRF — verified via Authorization + Tink signature)
+router
+  .post('/webhooks/google', [GoogleWebhookController, 'handleNotification'])
+  .as('webhooks.google.notify');
 
 // Home - accessible to both guests and authenticated users
 router.on('/').renderInertia('home', {}).use(middleware.silentAuth());

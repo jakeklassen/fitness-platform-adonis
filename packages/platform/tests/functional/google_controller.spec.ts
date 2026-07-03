@@ -1,8 +1,13 @@
 import Provider from '#models/provider';
 import ProviderAccount from '#models/provider_account';
 import User from '#models/user';
+import { GoogleHealthService } from '#services/google_health_service';
 import { allyFake, type AllyFake } from '#tests/utils/ally_fake';
+import app from '@adonisjs/core/services/app';
+import type { health_v4 } from '@googleapis/health';
 import { test } from '@japa/runner';
+
+const STUB_HEALTH_USER_ID = 'health-user-stub';
 
 async function makeUser() {
   return User.create({
@@ -12,13 +17,30 @@ async function makeUser() {
   });
 }
 
+/**
+ * A GoogleHealthService whose getIdentity is stubbed — the OAuth callback calls
+ * it, and we don't want tests reaching the real API.
+ */
+function fakeHealthService(healthUserId: string | null) {
+  return new GoogleHealthService(
+    () =>
+      ({
+        users: { getIdentity: async () => ({ data: { healthUserId } }) },
+      }) as unknown as health_v4.Health,
+  );
+}
+
 test.group('Google Health OAuth callback', (group) => {
   let ally: AllyFake;
 
   group.each.setup(() => {
     ally = allyFake();
+    app.container.swap(GoogleHealthService, () => fakeHealthService(STUB_HEALTH_USER_ID));
 
-    return () => ally.restore();
+    return () => {
+      ally.restore();
+      app.container.restore(GoogleHealthService);
+    };
   });
 
   test('links a new google_health account and stores the tokens', async ({ client, assert }) => {
@@ -43,6 +65,7 @@ test.group('Google Health OAuth callback', (group) => {
     assert.equal(account.providerUserId, sub);
     assert.equal(account.accessToken, 'access-1');
     assert.equal(account.refreshToken, 'refresh-1');
+    assert.equal(account.healthUserId, STUB_HEALTH_USER_ID);
   });
 
   test('rejects a first link that did not grant a refresh token', async ({ client, assert }) => {

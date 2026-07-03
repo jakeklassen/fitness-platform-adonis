@@ -55,6 +55,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   GOOGLE_CLIENT_ID: Env.schema.string(),
   GOOGLE_CLIENT_SECRET: Env.schema.string(),
   GOOGLE_CALLBACK_URL: Env.schema.string(),
+  // Full Authorization header value Google sends with each webhook (e.g.
+  // "Bearer <secret>"); must match the subscriber's endpointAuthorization.secret.
+  GOOGLE_WEBHOOK_SECRET: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
