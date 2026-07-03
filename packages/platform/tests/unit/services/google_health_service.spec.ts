@@ -1,94 +1,81 @@
-import Provider from '#models/provider';
-import ProviderAccount from '#models/provider_account';
-import User from '#models/user';
+import type ProviderAccount from '#models/provider_account';
 import { GoogleHealthService } from '#services/google_health_service';
+import type { health_v4 } from '@googleapis/health';
 import { test } from '@japa/runner';
 import { DateTime } from 'luxon';
 
-async function makeAccountWithValidToken() {
-  const user = await User.create({
-    email: `g-health-${Date.now()}-${Math.round(performance.now())}@example.com`,
-    password: 'secret123',
-  });
-  const provider = await Provider.findByOrFail('name', 'google_health');
+const account = { id: 1 } as unknown as ProviderAccount;
+const range = { start: DateTime.fromISO('2026-06-01'), end: DateTime.fromISO('2026-06-03') };
 
-  return ProviderAccount.create({
-    userId: user.id,
-    providerId: provider.id,
-    providerUserId: `sub-${Date.now()}`,
-    accessToken: 'valid-access',
-    refreshToken: 'stored-refresh',
-    // Future expiry so the token-refresh service returns it without a fetch,
-    // leaving the mocked fetch for the Health API call.
-    expiresAt: DateTime.now().plus({ hours: 1 }),
-  });
+function fakeClient(
+  response: health_v4.Schema$DailyRollUpDataPointsResponse | null,
+  opts: { throws?: boolean } = {},
+) {
+  return {
+    users: {
+      dataTypes: {
+        dataPoints: {
+          dailyRollUp: async () => {
+            if (opts.throws) {
+              throw new Error('Health API error');
+            }
+
+            return { data: response };
+          },
+        },
+      },
+    },
+  } as unknown as health_v4.Health;
 }
 
-test.group('GoogleHealthService', (group) => {
-  let originalFetch: typeof globalThis.fetch;
-
-  group.each.setup(() => {
-    originalFetch = globalThis.fetch;
-  });
-
-  group.each.teardown(() => {
-    globalThis.fetch = originalFetch;
-  });
-
-  test('aggregates step data points into per-day totals across pages', async ({ assert }) => {
-    const account = await makeAccountWithValidToken();
-
-    // Shape verified against a real API response: structured civilStartTime,
-    // per-minute intervals, string `count`.
-    const civil = (year: number, month: number, day: number, hours: number, minutes: number) => ({
-      date: { year, month, day },
-      time: { hours, minutes },
-    });
-
-    const pages = [
-      {
-        dataPoints: [
-          { steps: { interval: { civilStartTime: civil(2026, 6, 1, 0, 0) }, count: '100' } },
-          { steps: { interval: { civilStartTime: civil(2026, 6, 1, 1, 0) }, count: '50' } },
-          { steps: { interval: { civilStartTime: civil(2026, 6, 2, 0, 0) }, count: '200' } },
+test.group('GoogleHealthService', () => {
+  test('maps daily rollup points to sorted per-day totals', async ({ assert }) => {
+    const service = new GoogleHealthService(() =>
+      fakeClient({
+        rollupDataPoints: [
+          {
+            civilStartTime: { date: { year: 2026, month: 6, day: 2 } },
+            steps: { countSum: '225' },
+          },
+          {
+            civilStartTime: { date: { year: 2026, month: 6, day: 1 } },
+            steps: { countSum: '150' },
+          },
         ],
-        nextPageToken: 'page-2',
-      },
-      {
-        dataPoints: [
-          { steps: { interval: { civilStartTime: civil(2026, 6, 2, 2, 0) }, count: '25' } },
-        ],
-      },
-    ];
+      }),
+    );
 
-    let call = 0;
-    globalThis.fetch = async () =>
-      new Response(JSON.stringify(pages[call++]), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
-
-    const result = await new GoogleHealthService().getDailySteps(account, {
-      start: DateTime.fromISO('2026-06-01'),
-      end: DateTime.fromISO('2026-06-03'),
-    });
+    const result = await service.getDailySteps(account, range);
 
     assert.deepEqual(result, [
       { date: '2026-06-01', steps: 150 },
       { date: '2026-06-02', steps: 225 },
     ]);
-    assert.equal(call, 2);
   });
 
-  test('returns null when the Health API request fails', async ({ assert }) => {
-    const account = await makeAccountWithValidToken();
+  test('skips rollup points missing a date or step count', async ({ assert }) => {
+    const service = new GoogleHealthService(() =>
+      fakeClient({
+        rollupDataPoints: [
+          {
+            civilStartTime: { date: { year: 2026, month: 6, day: 1 } },
+            steps: { countSum: '100' },
+          },
+          { steps: { countSum: '50' } },
+          { civilStartTime: { date: { year: 2026, month: 6, day: 2 } } },
+        ],
+      }),
+    );
 
-    globalThis.fetch = async () => new Response('forbidden', { status: 403 });
+    const result = await service.getDailySteps(account, range);
 
-    const result = await new GoogleHealthService().getDailySteps(account, {
-      start: DateTime.fromISO('2026-06-01'),
-      end: DateTime.fromISO('2026-06-03'),
-    });
+    assert.deepEqual(result, [{ date: '2026-06-01', steps: 100 }]);
+  });
+
+  test('returns null when the Health API call fails', async ({ assert }) => {
+    const service = new GoogleHealthService(() => fakeClient(null, { throws: true }));
+
+    const result = await service.getDailySteps(account, range);
 
     assert.isNull(result);
   });

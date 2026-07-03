@@ -4,271 +4,366 @@
  * Run "node ace migration:run" command to re-generate this file
  */
 
-import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { DateTime } from 'luxon'
+import { BaseModel, column } from '@adonisjs/lucid/orm';
+import { DateTime } from 'luxon';
 
 export class ActivityStepSchema extends BaseModel {
-  static $columns = ['createdAt', 'date', 'granularity', 'id', 'providerAccountId', 'steps', 'syncedAt', 'time', 'updatedAt'] as const
-  $columns = ActivityStepSchema.$columns
+  static $columns = [
+    'createdAt',
+    'date',
+    'granularity',
+    'id',
+    'providerAccountId',
+    'steps',
+    'syncedAt',
+    'time',
+    'updatedAt',
+  ] as const;
+  $columns = ActivityStepSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column.date()
-  declare date: DateTime
+  declare date: DateTime;
   @column()
-  declare granularity: string
+  declare granularity: string;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare providerAccountId: number
+  declare providerAccountId: number;
   @column()
-  declare steps: number
+  declare steps: number;
   @column.dateTime()
-  declare syncedAt: DateTime
+  declare syncedAt: DateTime;
   @column()
-  declare time: string | null
+  declare time: string | null;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
 }
 
 export class CompetitionMemberSchema extends BaseModel {
-  static $columns = ['competitionId', 'createdAt', 'id', 'invitedBy', 'status', 'updatedAt', 'userId'] as const
-  $columns = CompetitionMemberSchema.$columns
+  static $columns = [
+    'competitionId',
+    'createdAt',
+    'id',
+    'invitedBy',
+    'status',
+    'updatedAt',
+    'userId',
+  ] as const;
+  $columns = CompetitionMemberSchema.$columns;
   @column()
-  declare competitionId: number
+  declare competitionId: number;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare invitedBy: number | null
+  declare invitedBy: number | null;
   @column()
-  declare status: string
+  declare status: string;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
   @column()
-  declare userId: number
+  declare userId: number;
 }
 
 export class CompetitionSchema extends BaseModel {
-  static $columns = ['createdAt', 'createdBy', 'deletedAt', 'description', 'endDate', 'goalType', 'goalValue', 'id', 'name', 'startDate', 'status', 'teamId', 'updatedAt', 'visibility'] as const
-  $columns = CompetitionSchema.$columns
+  static $columns = [
+    'createdAt',
+    'createdBy',
+    'deletedAt',
+    'description',
+    'endDate',
+    'goalType',
+    'goalValue',
+    'id',
+    'name',
+    'startDate',
+    'status',
+    'teamId',
+    'updatedAt',
+    'visibility',
+  ] as const;
+  $columns = CompetitionSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column()
-  declare createdBy: number
+  declare createdBy: number;
   @column.dateTime()
-  declare deletedAt: DateTime | null
+  declare deletedAt: DateTime | null;
   @column()
-  declare description: string | null
+  declare description: string | null;
   @column.date()
-  declare endDate: DateTime
+  declare endDate: DateTime;
   @column()
-  declare goalType: string
+  declare goalType: string;
   @column()
-  declare goalValue: number | null
+  declare goalValue: number | null;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare name: string
+  declare name: string;
   @column.date()
-  declare startDate: DateTime
+  declare startDate: DateTime;
   @column()
-  declare status: string
+  declare status: string;
   @column()
-  declare teamId: number | null
+  declare teamId: number | null;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
   @column()
-  declare visibility: string
+  declare visibility: string;
 }
 
 export class DailyStepSchema extends BaseModel {
-  static $columns = ['createdAt', 'date', 'id', 'primaryProviderAccountId', 'steps', 'updatedAt', 'userId'] as const
-  $columns = DailyStepSchema.$columns
+  static $columns = [
+    'createdAt',
+    'date',
+    'id',
+    'primaryProviderAccountId',
+    'steps',
+    'updatedAt',
+    'userId',
+  ] as const;
+  $columns = DailyStepSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column.date()
-  declare date: DateTime
+  declare date: DateTime;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare primaryProviderAccountId: number | null
+  declare primaryProviderAccountId: number | null;
   @column()
-  declare steps: number
+  declare steps: number;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
   @column()
-  declare userId: number
+  declare userId: number;
 }
 
 export class FitbitSubscriptionSchema extends BaseModel {
-  static $columns = ['collectionType', 'createdAt', 'fitbitSubscriberId', 'id', 'isActive', 'providerAccountId', 'subscriptionId', 'updatedAt', 'userId'] as const
-  $columns = FitbitSubscriptionSchema.$columns
+  static $columns = [
+    'collectionType',
+    'createdAt',
+    'fitbitSubscriberId',
+    'id',
+    'isActive',
+    'providerAccountId',
+    'subscriptionId',
+    'updatedAt',
+    'userId',
+  ] as const;
+  $columns = FitbitSubscriptionSchema.$columns;
   @column()
-  declare collectionType: string
+  declare collectionType: string;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column()
-  declare fitbitSubscriberId: string | null
+  declare fitbitSubscriberId: string | null;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare isActive: boolean | null
+  declare isActive: boolean | null;
   @column()
-  declare providerAccountId: number
+  declare providerAccountId: number;
   @column()
-  declare subscriptionId: string
+  declare subscriptionId: string;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
   @column()
-  declare userId: number
+  declare userId: number;
 }
 
 export class FriendshipSchema extends BaseModel {
-  static $columns = ['createdAt', 'friendId', 'id', 'status', 'updatedAt', 'userId'] as const
-  $columns = FriendshipSchema.$columns
+  static $columns = ['createdAt', 'friendId', 'id', 'status', 'updatedAt', 'userId'] as const;
+  $columns = FriendshipSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
+  declare createdAt: DateTime | null;
   @column()
-  declare friendId: number
+  declare friendId: number;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare status: string
+  declare status: string;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime | null;
   @column()
-  declare userId: number
+  declare userId: number;
 }
 
 export class ProviderAccountSchema extends BaseModel {
-  static $columns = ['accessToken', 'createdAt', 'expiresAt', 'id', 'providerId', 'providerUserId', 'refreshToken', 'updatedAt', 'userId'] as const
-  $columns = ProviderAccountSchema.$columns
+  static $columns = [
+    'accessToken',
+    'createdAt',
+    'expiresAt',
+    'id',
+    'providerId',
+    'providerUserId',
+    'refreshToken',
+    'updatedAt',
+    'userId',
+  ] as const;
+  $columns = ProviderAccountSchema.$columns;
   @column()
-  declare accessToken: string | null
+  declare accessToken: string | null;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column.dateTime()
-  declare expiresAt: DateTime | null
+  declare expiresAt: DateTime | null;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare providerId: number
+  declare providerId: number;
   @column()
-  declare providerUserId: string
+  declare providerUserId: string;
   @column()
-  declare refreshToken: string | null
+  declare refreshToken: string | null;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
   @column()
-  declare userId: number
+  declare userId: number;
 }
 
 export class ProviderSchema extends BaseModel {
-  static $columns = ['createdAt', 'displayName', 'id', 'name', 'updatedAt'] as const
-  $columns = ProviderSchema.$columns
+  static $columns = ['createdAt', 'displayName', 'id', 'name', 'updatedAt'] as const;
+  $columns = ProviderSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column()
-  declare displayName: string
+  declare displayName: string;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare name: string
+  declare name: string;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
 }
 
 export class QueueJobSchema extends BaseModel {
-  static $columns = ['acquiredAt', 'data', 'error', 'executeAt', 'finishedAt', 'id', 'queue', 'score', 'status', 'workerId'] as const
-  $columns = QueueJobSchema.$columns
+  static $columns = [
+    'acquiredAt',
+    'data',
+    'error',
+    'executeAt',
+    'finishedAt',
+    'id',
+    'queue',
+    'score',
+    'status',
+    'workerId',
+  ] as const;
+  $columns = QueueJobSchema.$columns;
   @column()
-  declare acquiredAt: bigint | number | null
+  declare acquiredAt: bigint | number | null;
   @column()
-  declare data: string
+  declare data: string;
   @column()
-  declare error: string | null
+  declare error: string | null;
   @column()
-  declare executeAt: bigint | number | null
+  declare executeAt: bigint | number | null;
   @column()
-  declare finishedAt: bigint | number | null
+  declare finishedAt: bigint | number | null;
   @column({ isPrimary: true })
-  declare id: string
+  declare id: string;
   @column()
-  declare queue: string
+  declare queue: string;
   @column()
-  declare score: bigint | number | null
+  declare score: bigint | number | null;
   @column()
-  declare status: string
+  declare status: string;
   @column()
-  declare workerId: string | null
+  declare workerId: string | null;
 }
 
 export class QueueScheduleSchema extends BaseModel {
-  static $columns = ['createdAt', 'cronExpression', 'everyMs', 'fromDate', 'id', 'lastRunAt', 'name', 'nextRunAt', 'payload', 'runCount', 'runLimit', 'status', 'timezone', 'toDate'] as const
-  $columns = QueueScheduleSchema.$columns
+  static $columns = [
+    'createdAt',
+    'cronExpression',
+    'everyMs',
+    'fromDate',
+    'id',
+    'lastRunAt',
+    'name',
+    'nextRunAt',
+    'payload',
+    'runCount',
+    'runLimit',
+    'status',
+    'timezone',
+    'toDate',
+  ] as const;
+  $columns = QueueScheduleSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column()
-  declare cronExpression: string | null
+  declare cronExpression: string | null;
   @column()
-  declare everyMs: bigint | number | null
+  declare everyMs: bigint | number | null;
   @column.dateTime()
-  declare fromDate: DateTime | null
+  declare fromDate: DateTime | null;
   @column({ isPrimary: true })
-  declare id: string
+  declare id: string;
   @column.dateTime()
-  declare lastRunAt: DateTime | null
+  declare lastRunAt: DateTime | null;
   @column()
-  declare name: string
+  declare name: string;
   @column.dateTime()
-  declare nextRunAt: DateTime | null
+  declare nextRunAt: DateTime | null;
   @column()
-  declare payload: string
+  declare payload: string;
   @column()
-  declare runCount: number
+  declare runCount: number;
   @column()
-  declare runLimit: number | null
+  declare runLimit: number | null;
   @column()
-  declare status: string
+  declare status: string;
   @column()
-  declare timezone: string
+  declare timezone: string;
   @column.dateTime()
-  declare toDate: DateTime | null
+  declare toDate: DateTime | null;
 }
 
 export class RememberMeTokenSchema extends BaseModel {
-  static $columns = ['createdAt', 'expiresAt', 'hash', 'id', 'tokenableId', 'updatedAt'] as const
-  $columns = RememberMeTokenSchema.$columns
+  static $columns = ['createdAt', 'expiresAt', 'hash', 'id', 'tokenableId', 'updatedAt'] as const;
+  $columns = RememberMeTokenSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column.dateTime()
-  declare expiresAt: DateTime
+  declare expiresAt: DateTime;
   @column()
-  declare hash: string
+  declare hash: string;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column()
-  declare tokenableId: number
+  declare tokenableId: number;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'preferredStepsProviderId', 'updatedAt'] as const
-  $columns = UserSchema.$columns
+  static $columns = [
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'password',
+    'preferredStepsProviderId',
+    'updatedAt',
+  ] as const;
+  $columns = UserSchema.$columns;
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
   @column()
-  declare email: string
+  declare email: string;
   @column()
-  declare fullName: string | null
+  declare fullName: string | null;
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
   @column({ serializeAs: null })
-  declare password: string
+  declare password: string;
   @column()
-  declare preferredStepsProviderId: number | null
+  declare preferredStepsProviderId: number | null;
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime | null;
 }
