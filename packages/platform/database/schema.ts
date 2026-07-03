@@ -197,6 +197,7 @@ export class ProviderAccountSchema extends BaseModel {
     'accessToken',
     'createdAt',
     'expiresAt',
+    'healthUserId',
     'id',
     'providerId',
     'providerUserId',
@@ -211,6 +212,8 @@ export class ProviderAccountSchema extends BaseModel {
   declare createdAt: DateTime;
   @column.dateTime()
   declare expiresAt: DateTime | null;
+  @column()
+  declare healthUserId: string | null;
   @column({ isPrimary: true })
   declare id: number;
   @column()
