@@ -12,24 +12,31 @@ import { timingSafeEqual } from 'node:crypto';
 // can load a keyset without reaching the network.
 export const webhookVerifier = new GoogleHealthWebhookVerifier();
 
-const notificationSchema = vine.compile(
-  vine.object({
-    data: vine.object({
-      healthUserId: vine.string().trim().minLength(1),
-      operation: vine.enum(['UPSERT', 'DELETE']),
-      dataType: vine.string().trim().minLength(1),
-      intervals: vine
-        .array(
-          vine.object({
-            physicalTimeInterval: vine.object({
-              startTime: vine.string(),
-              endTime: vine.string(),
+// Google delivers a JSON array of notification envelopes, each wrapping `data`.
+const notificationsSchema = vine.compile(
+  vine.array(
+    vine.object({
+      data: vine.object({
+        healthUserId: vine.string().trim().minLength(1),
+        operation: vine.enum(['UPSERT', 'DELETE']),
+        dataType: vine.string().trim().minLength(1),
+        intervals: vine
+          .array(
+            // Intervals arrive in varying shapes (physical/civil/…); we only
+            // read physicalTimeInterval, so keep it optional and ignore the rest.
+            vine.object({
+              physicalTimeInterval: vine
+                .object({
+                  startTime: vine.string(),
+                  endTime: vine.string(),
+                })
+                .optional(),
             }),
-          }),
-        )
-        .optional(),
+          )
+          .optional(),
+      }),
     }),
-  }),
+  ),
 );
 
 /**
@@ -81,32 +88,34 @@ export default class GoogleWebhookController {
       return response.badRequest({ error: 'Empty body' });
     }
 
-    const signature = request.header('google-health-api-signature');
+    const signature = request.header('x-healthapi-signature');
 
     if (!(await webhookVerifier.verify(Buffer.from(rawBody), signature))) {
       logger.error('[Google Webhook] Signature verification failed - possible spoofing attempt');
       return response.forbidden({ error: 'Invalid signature' });
     }
 
-    let payload: { data: GoogleHealthNotification };
+    let notifications: Array<{ data: GoogleHealthNotification }>;
 
     try {
-      payload = await notificationSchema.validate(body);
+      notifications = await notificationsSchema.validate(body);
     } catch (error) {
       logger.error({ err: error }, '[Google Webhook] Payload validation failed');
       return response.badRequest({ error: 'Invalid payload structure' });
     }
 
-    await ProcessGoogleHealthNotificationJob.dispatch(payload.data);
+    for (const notification of notifications) {
+      await ProcessGoogleHealthNotificationJob.dispatch(notification.data);
 
-    logger.info(
-      {
-        healthUserId: payload.data.healthUserId,
-        operation: payload.data.operation,
-        dataType: payload.data.dataType,
-      },
-      '[Google Webhook] Queued notification',
-    );
+      logger.info(
+        {
+          healthUserId: notification.data.healthUserId,
+          operation: notification.data.operation,
+          dataType: notification.data.dataType,
+        },
+        '[Google Webhook] Queued notification',
+      );
+    }
 
     return response.noContent();
   }

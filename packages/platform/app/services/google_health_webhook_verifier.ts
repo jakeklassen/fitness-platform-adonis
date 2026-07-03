@@ -91,7 +91,7 @@ function keyObjectFromTink(value: Buffer): crypto.KeyObject {
 }
 
 /**
- * Verifies Google Health API webhook signatures (`GOOGLE-HEALTH-API-SIGNATURE`).
+ * Verifies Google Health API webhook signatures (`X-HEALTHAPI-SIGNATURE`).
  *
  * Signatures are ECDSA P-256/SHA-256 (DER) over the raw request body, framed
  * with Tink's 5-byte prefix (0x01 + big-endian keyId), verified against Google's

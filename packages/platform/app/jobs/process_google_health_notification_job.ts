@@ -9,7 +9,7 @@ export interface GoogleHealthNotification {
   operation: 'UPSERT' | 'DELETE';
   dataType: string;
   intervals?: Array<{
-    physicalTimeInterval: { startTime: string; endTime: string };
+    physicalTimeInterval?: { startTime: string; endTime: string };
   }>;
 }
 
@@ -68,6 +68,10 @@ export default class ProcessGoogleHealthNotificationJob extends Job<GoogleHealth
     let latest: DateTime | null = null;
 
     for (const { physicalTimeInterval } of intervals) {
+      if (!physicalTimeInterval) {
+        continue;
+      }
+
       const start = DateTime.fromISO(physicalTimeInterval.startTime);
       const end = DateTime.fromISO(physicalTimeInterval.endTime);
 
