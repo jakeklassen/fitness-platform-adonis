@@ -67,8 +67,25 @@ export default class GoogleCreateSubscriber extends BaseCommand {
     this.logger.info(`Endpoint:   ${this.endpoint}`);
     this.logger.info(`Data types: ${this.dataTypes.join(', ')} (policy: ${this.policy})`);
 
+    // Prefer inline credentials (e.g. injected by `op run`) so no key file
+    // needs to touch disk; otherwise fall back to Application Default Credentials
+    // (GOOGLE_APPLICATION_CREDENTIALS path or `gcloud auth application-default login`).
+    const inlineKey = env.get('GOOGLE_SERVICE_ACCOUNT_KEY');
+    let credentials: { client_email: string; private_key: string } | undefined;
+
+    if (inlineKey) {
+      try {
+        credentials = JSON.parse(inlineKey) as { client_email: string; private_key: string };
+      } catch {
+        this.logger.error('GOOGLE_SERVICE_ACCOUNT_KEY is set but is not valid JSON.');
+        this.exitCode = 1;
+        return;
+      }
+    }
+
     const googleAuth = new auth.GoogleAuth({
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+      ...(credentials ? { credentials } : {}),
     });
 
     const client = health({ version: 'v4', auth: googleAuth });
