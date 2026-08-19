@@ -18,6 +18,12 @@ const routes = {
     tokens: [{"old":"/webhooks/fitbit","type":0,"val":"webhooks","end":""},{"old":"/webhooks/fitbit","type":0,"val":"fitbit","end":""}],
     types: placeholder as Registry['webhooks.fitbit.notify']['types'],
   },
+  'webhooks.google.notify': {
+    methods: ["POST"],
+    pattern: '/webhooks/google',
+    tokens: [{"old":"/webhooks/google","type":0,"val":"webhooks","end":""},{"old":"/webhooks/google","type":0,"val":"google","end":""}],
+    types: placeholder as Registry['webhooks.google.notify']['types'],
+  },
   'auth.register.show': {
     methods: ["GET","HEAD"],
     pattern: '/register',

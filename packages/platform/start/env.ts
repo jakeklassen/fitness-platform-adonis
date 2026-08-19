@@ -55,6 +55,13 @@ export default await Env.create(new URL('../', import.meta.url), {
   GOOGLE_CLIENT_ID: Env.schema.string(),
   GOOGLE_CLIENT_SECRET: Env.schema.string(),
   GOOGLE_CALLBACK_URL: Env.schema.string(),
+  // Full Authorization header value Google sends with each webhook (e.g.
+  // "Bearer <secret>"); must match the subscriber's endpointAuthorization.secret.
+  GOOGLE_WEBHOOK_SECRET: Env.schema.string(),
+  // Optional: inline service-account key JSON for subscriber management
+  // (google:create-subscriber). Alternative to GOOGLE_APPLICATION_CREDENTIALS —
+  // lets a secrets manager (e.g. `op run`) inject it without writing a key file.
+  GOOGLE_SERVICE_ACCOUNT_KEY: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------

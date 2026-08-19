@@ -29,6 +29,7 @@ env:
   GOOGLE_CLIENT_ID: ci-test-google-client-id
   GOOGLE_CLIENT_SECRET: ci-test-google-client-secret
   GOOGLE_CALLBACK_URL: http://localhost:3333/auth/google/callback
+  GOOGLE_WEBHOOK_SECRET: Bearer ci-test-webhook-secret
 
 jobs:
   lint:

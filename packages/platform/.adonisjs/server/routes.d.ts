@@ -6,6 +6,7 @@ export type ScannedRoutes = {
   ALL: {
     'webhooks.fitbit.verify': { paramsTuple?: []; params?: {} }
     'webhooks.fitbit.notify': { paramsTuple?: []; params?: {} }
+    'webhooks.google.notify': { paramsTuple?: []; params?: {} }
     'auth.register.show': { paramsTuple?: []; params?: {} }
     'auth.register': { paramsTuple?: []; params?: {} }
     'auth.login.show': { paramsTuple?: []; params?: {} }
@@ -77,6 +78,7 @@ export type ScannedRoutes = {
   }
   POST: {
     'webhooks.fitbit.notify': { paramsTuple?: []; params?: {} }
+    'webhooks.google.notify': { paramsTuple?: []; params?: {} }
     'auth.register': { paramsTuple?: []; params?: {} }
     'auth.login': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }

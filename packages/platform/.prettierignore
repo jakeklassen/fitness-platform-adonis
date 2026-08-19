@@ -1,0 +1,5 @@
+# Generated files — prettier must not reformat these, or it fights the code
+# generators (e.g. adds semicolons the generator omits) and churns on every boot.
+# Kept in sync with the eslint ignores in eslint.config.js.
+.adonisjs
+database/schema.ts

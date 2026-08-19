@@ -7,6 +7,9 @@ export interface ApiDefinition {
       verify: typeof routes['webhooks.fitbit.verify']
       notify: typeof routes['webhooks.fitbit.notify']
     }
+    google: {
+      notify: typeof routes['webhooks.google.notify']
+    }
   }
   auth: {
     register: typeof routes['auth.register'] & {

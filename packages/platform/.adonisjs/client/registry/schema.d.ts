@@ -31,6 +31,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/fitbit_webhook_controller').default['handleNotification']>>>
     }
   }
+  'webhooks.google.notify': {
+    methods: ["POST"]
+    pattern: '/webhooks/google'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/google_webhook_controller').default['handleNotification']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/google_webhook_controller').default['handleNotification']>>>
+    }
+  }
   'auth.register.show': {
     methods: ["GET","HEAD"]
     pattern: '/register'
